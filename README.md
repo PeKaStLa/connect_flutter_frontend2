@@ -34,4 +34,10 @@ samples, guidance on mobile development, and a full API reference.
 - frontend Apps und Web in flutter cause 3-in-1
 - backend with go and supabase (inclusive authentication and postgresDB)
 - for infra use "just" command runner and free OKD (OpenShift cluster inclusive cicd and dev tools)
+- ...
+- ...
+- use JavaScript R-Tree and k-nearest neighbours
+- https://github.com/mourner/rbush
+- https://github.com/mourner/rbush-knn
+- ...
 
