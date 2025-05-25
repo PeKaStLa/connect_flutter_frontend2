@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
 
 
@@ -81,6 +82,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // State variable to track the currently hovered area
+  final Logger _logger = Logger();
+
+  // State variable to track the currently hovered area
   Area? _currentlyHoveredArea;
   
   // List of example areas
@@ -119,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Placeholder for navigation or action when a marker is tapped
   void _navigateToChat(BuildContext context, Area area) {
-    print('Tapped on ${area.name}');
+    _logger.i('Tapped on area: ${area.name}');
     // You can implement navigation or show a dialog here
     ScaffoldMessenger.of(context).removeCurrentSnackBar(); // Remove previous snackbar
     ScaffoldMessenger.of(context).showSnackBar(
@@ -199,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         // Change color slightly on hover
-                        color: Colors.blue.withValues(alpha: isHovered ? 0.7 : 0.5),
+                        color: Colors.blue.withOpacity(isHovered ? 0.7 : 0.5),
                         border: Border.all(color: Colors.blue.shade700, width: 2),
                       ),
                       alignment: Alignment.center,
