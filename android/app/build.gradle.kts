@@ -9,8 +9,10 @@ android {
     namespace = "com.example.connect_flutter"
     compileSdk = flutter.compileSdkVersion
     // ndkVersion = flutter.ndkVersion
-    // ndkVersion = "27.0.12077973"
-    ndkVersion = "27.2.12479018"
+    ndkVersion = "27.0.12077973"
+    // ndkVersion = "27.2.12479018" // wirft 3 Fehler 
+    // Warnung: [options] Quellwert 8 ist veraltet und wird in einem zukünftigen Release entfernt
+    // Warnung: [options] Zielwert 8 ist veraltet und wird in einem zukünftigen Release entfernt
 
 
     compileOptions {
