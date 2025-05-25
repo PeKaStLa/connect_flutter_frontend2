@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
-//import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'dart:math' as math; // For math.cos, math.pow
+import 'dart:core'; // For math.cos, math.pow
+import 'package:connect_flutter/plugins/zoombuttons_plugin.dart';
+import 'package:connect_flutter/misc/tile_providers.dart';
 
 
 
@@ -59,12 +61,37 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // State variable to track the currently hovered area
   final Logger _logger = Logger();
 
-  // State variable to track the currently hovered area
+  late MapController mapController;
+  double _markerSize = 60.0; // Default marker size, can be adjusted
+  double _currentZoom = 12.0; // State variable to hold the current zoom level
+
   Area? _currentlyHoveredArea;
   Area? _currentlyClickedArea;
+
+  @override
+  void initState() {
+    super.initState();
+    mapController = MapController();
+
+    // _markerSize is already initialized with a default value
+  }
+
+  void _updateMarkerSize(double? zoom) {
+    // Update the marker size based on zoom
+    if (zoom == null) return; 
+          _currentZoom = zoom; // Update the current zoom level state
+// Guard against null zoom
+    setState(() {
+      // Example scaling logic, adjust as needed
+      // This aims to keep marker size somewhat consistent visually or scale it.
+      // A base size of 120 at zoom 12.0 might be a starting point.
+      _markerSize = round(0.015*math.pow(2,zoom)); // Simple linear scaling, adjust factor and base
+      // Ensure marker size doesn't get too small or too large
+      //_markerSize = _markerSize.clamp(40.0, 200.0);
+    });
+  }
   
   // List of example areas
   final List<Area> _exampleAreas = [
@@ -124,11 +151,15 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('${widget.title} - Zoom: ${_currentZoom.toStringAsFixed(2)}'),
       ),
       body: FlutterMap(
-        
+        mapController: mapController, // Assign the mapController
         options: MapOptions(
+          onPositionChanged: (position, hasGesture) {
+            _updateMarkerSize(position.zoom); 
+            _currentZoom = position.zoom; // Call regardless of gesture
+          },
           interactionOptions: const InteractionOptions(
             enableMultiFingerGestureRace: true,
           ),
@@ -136,10 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
           initialZoom: 12.0, // Adjusted zoom for better initial view of markers
         ),
         children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.connect.app', // Replace with your app's package name
-          ),
+          openStreetMapTileLayer,
           RichAttributionWidget(
             attributions: [
               TextSourceAttribution(
@@ -157,8 +185,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
               return Marker(
                 point: LatLng(area.centerLatitude, area.centerLongitude),
-                width: 120.0, // Give some extra width/height for the hover hit area
-                height: 120.0,
+                width: _markerSize, // Use dynamic marker size
+                height: _markerSize, // Use dynamic marker size
                 child: MouseRegion( // This makes it hoverable
                   onEnter: (event) {
                     if (mounted) { // Check if the state is still mounted
@@ -222,6 +250,16 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             }).toList(),
           ),
+  
+          // Add the ZoomButtons plugin here
+          const FlutterMapZoomButtons(
+            minZoom: 4,
+            maxZoom: 19,
+            mini: true,
+            padding: 10,
+            alignment: Alignment.bottomRight,
+          ),
+
         ],
       ),
     );
