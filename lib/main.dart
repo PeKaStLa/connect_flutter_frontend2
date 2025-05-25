@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
 //import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
+import 'dart:math' as math; // For math.cos, math.pow
 
 
 
@@ -63,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // State variable to track the currently hovered area
   Area? _currentlyHoveredArea;
+  Area? _currentlyClickedArea;
   
   // List of example areas
   final List<Area> _exampleAreas = [
@@ -108,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -124,7 +127,11 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: FlutterMap(
+        
         options: MapOptions(
+          interactionOptions: const InteractionOptions(
+            enableMultiFingerGestureRace: true,
+          ),
           initialCenter: const LatLng(-37.8136, 144.9631), // Centered on Melbourne CBD
           initialZoom: 12.0, // Adjusted zoom for better initial view of markers
         ),
@@ -146,6 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
             markers: _exampleAreas.map((area) {
               // Determine color based on hover state
               final bool isHovered = _currentlyHoveredArea?.name == area.name;
+              final bool isClicked = _currentlyClickedArea?.name == area.name;
 
               return Marker(
                 point: LatLng(area.centerLatitude, area.centerLongitude),
@@ -156,6 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (mounted) { // Check if the state is still mounted
                       setState(() {
                         _currentlyHoveredArea = area;
+                        _currentlyClickedArea = null;
                       });
                     }
                   },
@@ -168,19 +177,32 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   child: GestureDetector( // This makes it clickable
                     onTap: () {
+                      if (mounted) {
+                          setState(() {
+                            if (_currentlyClickedArea?.name == area.name) { // Check if the tapped area is ALREADY selected
+                              // If it is, then deselect it
+                              _currentlyClickedArea = null;
+                            } else {
+                              // If it's a different area, or no area was selected, then select this new area
+                              _currentlyClickedArea = area;
+                            }
+                            // Optionally, always clear hover state immediately on tap for cleaner transition
+                          });
+                        }
                       // Immediately hide hover info on tap
                       if (_currentlyHoveredArea != null && mounted) {
                         setState(() {
                           _currentlyHoveredArea = null;
                         });
                       }
+
                       _navigateToChat(context, area);
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         // Change color slightly on hover
-                        color: Colors.blue.withValues(alpha: isHovered ? 0.7 : 0.5),
+                        color: Colors.blue.withValues(alpha: isHovered ? 0.7 : isClicked ? 0.7 : 0.5),
                         border: Border.all(color: Colors.blue.shade700, width: 2),
                       ),
                       alignment: Alignment.center,
