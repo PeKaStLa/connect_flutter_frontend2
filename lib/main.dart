@@ -8,7 +8,6 @@ import 'package:connect_flutter/plugins/zoombuttons_plugin.dart';
 import 'package:connect_flutter/misc/tile_providers.dart';
 
 
-
 // Define the Area class
 class Area {
   final double centerLatitude;
@@ -64,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final Logger _logger = Logger();
 
   late MapController mapController;
-  double _markerSize = 60.0; // Default marker size, can be adjusted
+  // double _markerSize = 60.0; // This will be calculated per marker now
   double _currentZoom = 12.0; // State variable to hold the current zoom level
 
   Area? _currentlyHoveredArea;
@@ -74,23 +73,24 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     mapController = MapController();
-
-    // _markerSize is already initialized with a default value
+    // _currentZoom is initialized. It will be updated by onPositionChanged.
   }
 
-  void _updateMarkerSize(double? zoom) {
-    // Update the marker size based on zoom
-    if (zoom == null) return; 
-          _currentZoom = zoom; // Update the current zoom level state
-// Guard against null zoom
-    setState(() {
-      // Example scaling logic, adjust as needed
-      // This aims to keep marker size somewhat consistent visually or scale it.
-      // A base size of 120 at zoom 12.0 might be a starting point.
-      _markerSize = round(0.015*math.pow(2,zoom)); // Simple linear scaling, adjust factor and base
-      // Ensure marker size doesn't get too small or too large
-      //_markerSize = _markerSize.clamp(40.0, 200.0);
-    });
+  // This function now primarily updates the current zoom and triggers a rebuild
+  void _updateCurrentZoom(double? newZoom) {
+    if (newZoom == null) return;
+    // Only call setState if the zoom has actually changed to avoid unnecessary rebuilds
+    if (_currentZoom != newZoom) {
+      setState(() {
+        _currentZoom = newZoom;
+      });
+    }
+  }
+
+  double _calculateMarkerSizeForArea(Area area, double currentZoom) {
+    double calculatedSize = 0.000008 * area.radiusMeter * math.pow(2, currentZoom);
+    // return calculatedSize.clamp(20.0, 200.0); // Clamp to min/max size
+    return calculatedSize; // Clamp to min/max size
   }
   
   // List of example areas
@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
       minLongitude: 144.9581,
       maxLatitude: -37.8086,
       maxLongitude: 144.9681,
-      radiusMeter: 1000.0,
+      radiusMeter: 1931.0,
     ),
     Area(
       name: "Royal Botanic Gardens",
@@ -113,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
       minLongitude: 144.9740,
       maxLatitude: -37.8250,
       maxLongitude: 144.9840,
-      radiusMeter: 750.0,
+      radiusMeter: 805.0,
     ),
     Area(
       name: "Docklands",
@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
       minLongitude: 144.9370,
       maxLatitude: -37.8120,
       maxLongitude: 144.9470,
-      radiusMeter: 800.0,
+      radiusMeter: 1610.0,
     ),
   ];
 
@@ -156,9 +156,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: FlutterMap(
         mapController: mapController, // Assign the mapController
         options: MapOptions(
-          onPositionChanged: (position, hasGesture) {
-            _updateMarkerSize(position.zoom); 
-            _currentZoom = position.zoom; // Call regardless of gesture
+          onPositionChanged: (MapCamera camera, bool hasGesture) {
+            _updateCurrentZoom(camera.zoom);
           },
           interactionOptions: const InteractionOptions(
             enableMultiFingerGestureRace: true,
@@ -183,10 +182,12 @@ class _MyHomePageState extends State<MyHomePage> {
               final bool isHovered = _currentlyHoveredArea?.name == area.name;
               final bool isClicked = _currentlyClickedArea?.name == area.name;
 
+              final double calculatedMarkerSize = _calculateMarkerSizeForArea(area, _currentZoom);
+
               return Marker(
                 point: LatLng(area.centerLatitude, area.centerLongitude),
-                width: _markerSize, // Use dynamic marker size
-                height: _markerSize, // Use dynamic marker size
+                width: calculatedMarkerSize,
+                height: calculatedMarkerSize,
                 child: MouseRegion( // This makes it hoverable
                   onEnter: (event) {
                     if (mounted) { // Check if the state is still mounted
