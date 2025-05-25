@@ -131,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.example.app', // Replace with your app's package name
+            userAgentPackageName: 'com.connect.app', // Replace with your app's package name
           ),
           RichAttributionWidget(
             attributions: [
@@ -180,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         // Change color slightly on hover
-                        color: Colors.blue.withOpacity(isHovered ? 0.7 : 0.5),
+                        color: Colors.blue.withValues(alpha: isHovered ? 0.7 : 0.5),
                         border: Border.all(color: Colors.blue.shade700, width: 2),
                       ),
                       alignment: Alignment.center,
@@ -202,7 +202,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      // Removed the old FloatingActionButton for incrementing a counter
     );
   }
 }
