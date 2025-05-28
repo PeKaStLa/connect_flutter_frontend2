@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
-import 'dart:math' as math; // For math.cos, math.pow
 import 'dart:core'; // For math.cos, math.pow
 import 'package:connect_flutter/plugins/zoombuttons.dart';
 import 'package:connect_flutter/misc/tile_providers.dart';
 import 'package:connect_flutter/widgets/area_details_overlay.dart'; // Import the new widget
 import 'package:connect_flutter/models/area_data.dart'; // Import the new area data file
+import 'package:connect_flutter/utils/map_utils.dart'; // Import the new utility functions
 
 void main() {
   runApp(const MyApp());
@@ -38,7 +37,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final Logger _logger = Logger();
 
   late MapController mapController;
   // double _markerSize = 60.0; // This will be calculated per marker now
@@ -63,22 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
         _currentZoom = newZoom;
       });
     }
-  }
-
-  double _calculateMarkerSizeForArea(Area area, double currentZoom) {
-    double calculatedSize = 0.000008 * area.radiusMeter * math.pow(2, currentZoom);
-    // return calculatedSize.clamp(20.0, 200.0); // Clamp to min/max size
-    return calculatedSize; // Clamp to min/max size
-  }
-  
-  // Placeholder for navigation or action when a marker is tapped
-  void _navigateToChat(BuildContext context, Area area) {
-    _logger.i('Tapped on area: ${area.name}');
-    // You can implement navigation or show a dialog here
-    ScaffoldMessenger.of(context).removeCurrentSnackBar(); // Remove previous snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Action for: ${area.name}')),
-    );
   }
 
   @override
@@ -127,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // Determine color based on hover state
               final bool isHovered = _currentlyHoveredArea?.name == area.name;
               final bool isClicked = _currentlyClickedArea?.name == area.name;
-              final double calculatedMarkerSize = _calculateMarkerSizeForArea(area, _currentZoom);
+              final double calculatedMarkerSize = calculateMarkerSizeForArea(area, _currentZoom);
 
               return Marker(
                 point: LatLng(area.centerLatitude, area.centerLongitude),
@@ -207,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
         AreaDetailsOverlay(
           currentlyClickedArea: _currentlyClickedArea,
           onChatNavigation: (area) {
-            _navigateToChat(context, area);
+            navigateToChat(context, area); // Use extracted function
             // Optionally hide the overlay after navigating
           },
           onClose: () {
