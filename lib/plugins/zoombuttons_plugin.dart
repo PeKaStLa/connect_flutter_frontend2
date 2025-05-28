@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_compass/flutter_map_compass.dart';
+import 'package:flutter/cupertino.dart'; // For CupertinoIcons
 
 class FlutterMapZoomButtons extends StatelessWidget {
   final double minZoom;
@@ -17,6 +19,7 @@ class FlutterMapZoomButtons extends StatelessWidget {
   final IconData zoomOutIcon;
   final IconData exploreIcon;
   final IconData navigationIcon;
+  final double compassIconSize;
 
   const FlutterMapZoomButtons({
     super.key,
@@ -33,6 +36,7 @@ class FlutterMapZoomButtons extends StatelessWidget {
     this.zoomOutIcon = Icons.zoom_out,
     this.exploreIcon = Icons.explore,
     this.navigationIcon = Icons.navigation,
+    this.compassIconSize = 39, // Default compass icon size
   });
 
   @override
@@ -56,9 +60,28 @@ class FlutterMapZoomButtons extends StatelessWidget {
               onPressed: () {
                 controller.rotate(0);
               },
-              child: Icon(
-                  camera.rotation == 0 ? navigationIcon : exploreIcon,
-                  color: zoomInColorIcon ?? theme.iconTheme.color),
+              child: MapCompass(
+                hideIfRotatedNorth: true,
+                rotationOffset: -45, // Specific to Cupertino-style compass
+                alignment: Alignment.center, //Center the icon within the FAB
+                padding: EdgeInsets.only(left: 0), // Let FAB padding and size control spacing
+                icon: Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    // The order matters for stacking: first is bottom, last is top.
+                    // CupertinoIcons.circle is an outline, so it can act as a border.
+                    // The original MapCompass.cupertino puts circle last, which means it's drawn on top.
+                    Icon(CupertinoIcons.compass, color: Colors.red, size: compassIconSize-1),
+                    Icon(CupertinoIcons.compass_fill, color: Colors.white54, size: compassIconSize-2),
+                    Icon(CupertinoIcons.circle, color: Colors.black, size: compassIconSize),
+                  ],
+                ),
+                // onPressed is handled by the FAB, MapCompass will use its default
+                // behavior (rotate to North) due to onPressedOverridesDefault = true by default.
+                // If you want MapCompass to be non-interactive visually:
+                // onPressed: null,
+                // onPressedOverridesDefault: false,
+              ),
             ),
           ),
 
