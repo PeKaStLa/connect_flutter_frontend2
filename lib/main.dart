@@ -7,6 +7,7 @@ import 'package:connect_flutter/misc/tile_providers.dart';
 import 'package:connect_flutter/widgets/area_details_overlay.dart'; // Import the new widget
 import 'package:connect_flutter/models/area_data.dart'; // Import the new area data file
 import 'package:connect_flutter/utils/map_utils.dart'; // Import the new utility functions
+import 'package:connect_flutter/widgets/area_chat_overlay.dart'; // Import the chat overlay
 
 void main() {
   runApp(const MyApp());
@@ -44,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Area? _currentlyHoveredArea;
   Area? _currentlyClickedArea;
+  Area? _chattingInArea; // State to manage which area's chat is open
 
   @override
   void initState() {
@@ -145,6 +147,23 @@ class _MyHomePageState extends State<MyHomePage> {
           onPositionChanged: (MapCamera camera, bool hasGesture) {
             _updateCurrentZoom(camera.zoom);
           },
+          
+          onTap: (_, __) { // Add onTap to map to potentially close overlays
+            if (mounted) {
+              setState(() {
+                // Close both overlays if map is tapped
+                // _currentlyClickedArea = null;
+                // _chattingInArea = null;
+                // Or, only close chat if it's open, otherwise close details
+                if (_chattingInArea != null) {
+                  _chattingInArea = null;
+                } else {
+                  _currentlyClickedArea = null;
+                }
+              });
+            }
+          },
+
           interactionOptions: const InteractionOptions(
             enableMultiFingerGestureRace: true,
           ),
@@ -174,7 +193,6 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: 10,
             alignment: Alignment.bottomRight,
           ),
-
         ],
       ),
         // Use the new AreaDetailsOverlay widget
@@ -182,12 +200,27 @@ class _MyHomePageState extends State<MyHomePage> {
           currentlyClickedArea: _currentlyClickedArea,
           onChatNavigation: (area) {
             navigateToChat(context, area); // Use extracted function
-            // Optionally hide the overlay after navigating
-          },
+                if (mounted) {
+                  setState(() {
+                    _chattingInArea = area;
+                  });
+                }          },
           onClose: () {
             if (mounted) setState(() => _currentlyClickedArea = null);
           },
         ),
+          // Conditionally display MapChatOverlay
+          if (_chattingInArea != null)
+            AreaChatOverlay(
+              area: _chattingInArea!,
+              onClose: () {
+                if (mounted) {
+                  setState(() {
+                    _chattingInArea = null;
+                  });
+                }
+              },
+            ),
         ]
       )
     );
