@@ -40,4 +40,6 @@ samples, guidance on mobile development, and a full API reference.
 - https://github.com/mourner/rbush
 - https://github.com/mourner/rbush-knn
 - ...
+- TODO:
+- calculate area perimeter and PIXEL based on the Latitude! If not the same circles at Antarctica and Äquator would be same size even though they should be really different sized.
 
