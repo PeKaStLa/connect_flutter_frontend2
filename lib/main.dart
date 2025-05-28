@@ -101,6 +101,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   _currentlyClickedArea = area; // Select this new area
                 }
                 _currentlyHoveredArea = null; // Clear hover state on tap
+
+                if (_chattingInArea != null) {
+                  _chattingInArea = null;
+                }
               });
             }
           },
