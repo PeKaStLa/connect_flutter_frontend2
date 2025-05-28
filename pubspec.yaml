@@ -36,6 +36,7 @@ dependencies:
   logger: ^2.5.0 # logging
   provider: ^6.1.5
   geolocator: ^14.0.0
+  flutter_map_compass: ^1.0.0 # https://github.com/josxha/flutter_map_plugins/tree/main/flutter_map_compass
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
