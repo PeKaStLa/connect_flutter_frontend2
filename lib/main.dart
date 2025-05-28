@@ -144,9 +144,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return Positioned(
-      bottom: 20.0,
-      left: 20.0,
-      right: 20.0,
+      bottom: 55.0,
+      left: 10.0,
+      right: 60.0,
       child: Material( // Using Material for elevation and theming
         elevation: 4.0,
         borderRadius: BorderRadius.circular(8.0),
@@ -161,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               Expanded(
                 child: Text(
-                  'Area: ${_currentlyClickedArea!.name}',
+                  'Area: ${_currentlyClickedArea!.name}\nUsers in area: 12345',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
