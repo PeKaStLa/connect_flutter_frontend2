@@ -6,6 +6,7 @@ import 'dart:math' as math; // For math.cos, math.pow
 import 'dart:core'; // For math.cos, math.pow
 import 'package:connect_flutter/plugins/zoombuttons.dart';
 import 'package:connect_flutter/misc/tile_providers.dart';
+import 'package:connect_flutter/widgets/area_details_overlay.dart'; // Import the new widget
 
 
 // Define the Area class
@@ -137,52 +138,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
-  Widget _buildAreaDetailsOverlay(BuildContext context) {
-    if (_currentlyClickedArea == null) {
-      return const SizedBox.shrink(); // Return an empty widget if no area is clicked
-    }
-
-    return Positioned(
-      bottom: 55.0,
-      left: 10.0,
-      right: 60.0,
-      child: Material( // Using Material for elevation and theming
-        elevation: 4.0,
-        borderRadius: BorderRadius.circular(8.0),
-        child: Container(
-          padding: const EdgeInsets.all(12.0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface, // Use theme color
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  'Area: ${_currentlyClickedArea!.name}\nUsers in area: 12345',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () {
-                  if (mounted) {
-                    setState(() {
-                      _currentlyClickedArea = null;
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -268,9 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           _currentlyHoveredArea = null;
                         });
                       }
-
-                      _navigateToChat(context, area);
-                    },
+                   },
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -307,8 +260,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
         ],
       ),
-        // Add the overlay widget here
-        _buildAreaDetailsOverlay(context),
+        // Use the new AreaDetailsOverlay widget
+        AreaDetailsOverlay(
+          currentlyClickedArea: _currentlyClickedArea,
+          onChatNavigation: (area) {
+            _navigateToChat(context, area);
+            // Optionally hide the overlay after navigating
+          },
+          onClose: () {
+            if (mounted) setState(() => _currentlyClickedArea = null);
+          },
+        ),
         ]
       )
     );
