@@ -57,7 +57,7 @@ class ZoomButtons extends StatelessWidget {
               onPressed: () {
                 controller.rotate(0);
               },
-              child: (camera.rotation == 0)
+              child: (camera.rotation.abs() < 0.001) // More robust check for 0 rotation
               ? Icon(navigationIcon , color: zoomInColorIcon ?? theme.iconTheme.color)
               : CustomMapCompass(
                 hideIfRotatedNorth: true,
