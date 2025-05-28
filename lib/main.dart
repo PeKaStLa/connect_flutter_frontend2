@@ -7,30 +7,7 @@ import 'dart:core'; // For math.cos, math.pow
 import 'package:connect_flutter/plugins/zoombuttons.dart';
 import 'package:connect_flutter/misc/tile_providers.dart';
 import 'package:connect_flutter/widgets/area_details_overlay.dart'; // Import the new widget
-
-
-// Define the Area class
-class Area {
-  final double centerLatitude;
-  final double centerLongitude;
-  final double minLatitude;
-  final double minLongitude;
-  final double maxLatitude;
-  final double maxLongitude;
-  final String name;
-  final double radiusMeter;
-
-  Area({
-    required this.centerLatitude,
-    required this.centerLongitude,
-    required this.minLatitude,
-    required this.minLongitude,
-    required this.maxLatitude,
-    required this.maxLongitude,
-    required this.name,
-    required this.radiusMeter,
-  });
-}
+import 'package:connect_flutter/models/area_data.dart'; // Import the new area data file
 
 void main() {
   runApp(const MyApp());
@@ -94,40 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return calculatedSize; // Clamp to min/max size
   }
   
-  // List of example areas
-  final List<Area> _exampleAreas = [
-    Area(
-      name: "Melbourne CBD",
-      centerLatitude: -37.8136,
-      centerLongitude: 144.9631,
-      minLatitude: -37.8186,
-      minLongitude: 144.9581,
-      maxLatitude: -37.8086,
-      maxLongitude: 144.9681,
-      radiusMeter: 1931.0,
-    ),
-    Area(
-      name: "Royal Botanic Gardens",
-      centerLatitude: -37.8300,
-      centerLongitude: 144.9790,
-      minLatitude: -37.8350,
-      minLongitude: 144.9740,
-      maxLatitude: -37.8250,
-      maxLongitude: 144.9840,
-      radiusMeter: 805.0,
-    ),
-    Area(
-      name: "Docklands",
-      centerLatitude: -37.8170,
-      centerLongitude: 144.9420,
-      minLatitude: -37.8220,
-      minLongitude: 144.9370,
-      maxLatitude: -37.8120,
-      maxLongitude: 144.9470,
-      radiusMeter: 1610.0,
-    ),
-  ];
-
   // Placeholder for navigation or action when a marker is tapped
   void _navigateToChat(BuildContext context, Area area) {
     _logger.i('Tapped on area: ${area.name}');
@@ -180,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           // Add the MarkerLayer for clickable and hoverable areas
           MarkerLayer(
-            markers: _exampleAreas.map((area) {
+            markers: exampleAreas.map((area) {
               // Determine color based on hover state
               final bool isHovered = _currentlyHoveredArea?.name == area.name;
               final bool isClicked = _currentlyClickedArea?.name == area.name;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:connect_flutter/main.dart'; // For the Area class
+import 'package:connect_flutter/models/area_data.dart'; // For the Area class
 
 class AreaDetailsOverlay extends StatelessWidget {
   final Area? currentlyClickedArea;
