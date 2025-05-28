@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:math' as math; // For math.cos, math.pow
 import 'dart:core'; // For math.cos, math.pow
-import 'package:connect_flutter/plugins/zoombuttons_plugin.dart';
+import 'package:connect_flutter/plugins/zoombuttons.dart';
 import 'package:connect_flutter/misc/tile_providers.dart';
 
 
@@ -253,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
   
           // Add the ZoomButtons plugin here
-          const FlutterMapZoomButtons(
+          const ZoomButtons(
             minZoom: 4,
             maxZoom: 19,
             mini: true,
