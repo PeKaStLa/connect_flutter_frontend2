@@ -138,6 +138,51 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
+  Widget _buildAreaDetailsOverlay(BuildContext context) {
+    if (_currentlyClickedArea == null) {
+      return const SizedBox.shrink(); // Return an empty widget if no area is clicked
+    }
+
+    return Positioned(
+      bottom: 20.0,
+      left: 20.0,
+      right: 20.0,
+      child: Material( // Using Material for elevation and theming
+        elevation: 4.0,
+        borderRadius: BorderRadius.circular(8.0),
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface, // Use theme color
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  'Area: ${_currentlyClickedArea!.name}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  if (mounted) {
+                    setState(() {
+                      _currentlyClickedArea = null;
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -153,7 +198,10 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text('${widget.title} - Zoom: ${_currentZoom.toStringAsFixed(2)}'),
       ),
-      body: FlutterMap(
+      body: Stack( // Use Stack to overlay widgets
+        children: [
+
+      FlutterMap(
         mapController: mapController, // Assign the mapController
         options: MapOptions(
           onPositionChanged: (MapCamera camera, bool hasGesture) {
@@ -181,7 +229,6 @@ class _MyHomePageState extends State<MyHomePage> {
               // Determine color based on hover state
               final bool isHovered = _currentlyHoveredArea?.name == area.name;
               final bool isClicked = _currentlyClickedArea?.name == area.name;
-
               final double calculatedMarkerSize = _calculateMarkerSizeForArea(area, _currentZoom);
 
               return Marker(
@@ -209,13 +256,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (mounted) {
                           setState(() {
                             if (_currentlyClickedArea?.name == area.name) { // Check if the tapped area is ALREADY selected
-                              // If it is, then deselect it
-                              _currentlyClickedArea = null;
+                              _currentlyClickedArea = null; // deselect it
                             } else {
-                              // If it's a different area, or no area was selected, then select this new area
-                              _currentlyClickedArea = area;
+                              _currentlyClickedArea = area; // select it
                             }
-                            // Optionally, always clear hover state immediately on tap for cleaner transition
                           });
                         }
                       // Immediately hide hover info on tap
@@ -263,6 +307,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
         ],
       ),
+        // Add the overlay widget here
+        _buildAreaDetailsOverlay(context),
+        ]
+      )
     );
   }
 }
