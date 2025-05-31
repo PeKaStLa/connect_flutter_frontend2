@@ -4,7 +4,6 @@ import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:connect_flutter/models/area_data.dart'; // Import the Area model
 import 'package:pocketbase/pocketbase.dart'; // Import PocketBase
-import 'package:hive_ce/hive.dart';
 
 class AreaChatOverlay extends StatefulWidget {
   final Area area;
