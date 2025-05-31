@@ -8,6 +8,7 @@ import 'package:connect_flutter/widgets/area_details_overlay.dart'; // Import th
 import 'package:connect_flutter/models/area_data.dart'; // Import the new area data file
 import 'package:connect_flutter/utils/map_utils.dart'; // Import the new utility functions
 import 'package:connect_flutter/widgets/area_chat_overlay.dart'; // Import the chat overlay
+import 'package:pocketbase/pocketbase.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,9 +41,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   late MapController mapController;
-  // double _markerSize = 60.0; // This will be calculated per marker now
+  final pb = PocketBase('https://my-pb-318455951907.australia-southeast2.run.app');
   double _currentZoom = 12.0; // State variable to hold the current zoom level
-
   Area? _currentlyHoveredArea;
   Area? _currentlyClickedArea;
   Area? _chattingInArea; // State to manage which area's chat is open
@@ -51,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     mapController = MapController();
+    
     // _currentZoom is initialized. It will be updated by onPositionChanged.
   }
 
@@ -97,14 +98,16 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 if (_currentlyClickedArea?.name == area.name) {
                   _currentlyClickedArea = null; // Deselect if tapped again
-                } else {
+                } else if (_currentlyClickedArea?.name != area.name) {
                   _currentlyClickedArea = area; // Select this new area
                 }
-                _currentlyHoveredArea = null; // Clear hover state on tap
 
                 if (_chattingInArea != null) {
-                  _chattingInArea = null;
+                  _chattingInArea = area;          
                 }
+
+                _currentlyHoveredArea = null; // Clear hover state on tap
+              
               });
             }
           },
@@ -159,11 +162,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 // _currentlyClickedArea = null;
                 // _chattingInArea = null;
                 // Or, only close chat if it's open, otherwise close details
-                if (_chattingInArea != null) {
-                  _chattingInArea = null;
-                } else {
+                if (_chattingInArea == null && _currentlyClickedArea != null) {
                   _currentlyClickedArea = null;
-                }
+                } else if (_chattingInArea != null && _currentlyClickedArea != null) {
+                  _chattingInArea = null;
+                } 
+                
               });
             }
           },
@@ -217,6 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (_chattingInArea != null)
             AreaChatOverlay(
               area: _chattingInArea!,
+              pb: pb,
               onClose: () {
                 if (mounted) {
                   setState(() {

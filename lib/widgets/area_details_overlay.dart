@@ -51,7 +51,7 @@ class AreaDetailsOverlay extends StatelessWidget {
                 onPressed: () {
                   onChatNavigation(currentlyClickedArea!);
                 },
-                child: const Text('to chat'),
+                child: const Text('Chat'),
               ),
               IconButton(
                 icon: const Icon(Icons.close),
