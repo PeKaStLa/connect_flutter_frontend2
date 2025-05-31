@@ -78,7 +78,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
     return Positioned(
       bottom: 130,
       left: 0,
-      right: 0,
+      right: 60,
       child: Container(
         height: 250,
         decoration: BoxDecoration(
