@@ -9,8 +9,10 @@ import 'package:connect_flutter/models/area_data.dart'; // Import the new area d
 import 'package:connect_flutter/utils/map_utils.dart'; // Import the new utility functions
 import 'package:connect_flutter/widgets/area_chat_overlay.dart'; // Import the chat overlay
 import 'package:pocketbase/pocketbase.dart';
-
-void main() {
+import 'package:hive_ce_flutter/hive_flutter.dart';
+ 
+void main() async {
+  await Hive.initFlutter(); // Initialize Hive for Flutter
   runApp(const MyApp());
 }
 
@@ -220,6 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // Conditionally display MapChatOverlay
           if (_chattingInArea != null)
             AreaChatOverlay(
+              key: ValueKey(_chattingInArea!.name), 
               area: _chattingInArea!,
               pb: pb,
               onClose: () {

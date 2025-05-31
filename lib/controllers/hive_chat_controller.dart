@@ -6,14 +6,38 @@ import 'package:hive_ce/hive.dart';
 class HiveChatController
     with UploadProgressMixin, ScrollToMessageMixin
     implements ChatController {
-  final _box = Hive.box('chat');
+  late final Box _box;
+  final String _boxName;
   final _operationsController = StreamController<ChatOperation>.broadcast();
 
   // Cache for performance - invalidated when data changes
   List<Message>? _cachedMessages;
 
+  /// Creates a HiveChatController.
+  /// [chatId] is used to create a unique box name for this chat instance.
+  /// It's recommended to sanitize [chatId] if it comes from user input or
+  /// could contain characters not suitable for file names.
+  HiveChatController({required String chatId}) : _boxName = 'box_$chatId';
+
+  /// Initializes the controller by opening its specific Hive box.
+  /// This must be called before using the controller.
+  Future<void> init() async {
+    // Hive.initFlutter() should have been called once in main.dart
+    _box = await Hive.openBox(_boxName);
+    // Emit an initial state to ensure the Chat widget loads existing messages.
+    if (_box.isNotEmpty && messages.isNotEmpty) { // Accessing messages getter will load from _box
+      _operationsController.add(ChatOperation.set(messages));
+    } else {
+      _operationsController.add(ChatOperation.set([])); // Emit empty if box is new or empty
+    }
+  }
+
+  /// Returns the name of the Hive box being used by this controller.
+  String get boxName => _box.isOpen ? _box.name : _boxName; // Return _boxName if not yet open
+
   @override
   Future<void> insertMessage(Message message, {int? index}) async {
+    if (!_box.isOpen) throw StateError('Hive box $_boxName is not open. Call init() first.');
     if (_box.containsKey(message.id)) return;
 
     // Index is ignored because Hive does not maintain order
@@ -24,6 +48,7 @@ class HiveChatController
 
   @override
   Future<void> removeMessage(Message message) async {
+    if (!_box.isOpen) throw StateError('Hive box $_boxName is not open. Call init() first.');
     final sortedMessages = List.from(messages);
     final index = sortedMessages.indexWhere((m) => m.id == message.id);
 
@@ -37,6 +62,7 @@ class HiveChatController
 
   @override
   Future<void> updateMessage(Message oldMessage, Message newMessage) async {
+    if (!_box.isOpen) throw StateError('Hive box $_boxName is not open. Call init() first.');
     final sortedMessages = List.from(messages);
     final index = sortedMessages.indexWhere((m) => m.id == oldMessage.id);
 
@@ -57,6 +83,7 @@ class HiveChatController
 
   @override
   Future<void> setMessages(List<Message> messages) async {
+    if (!_box.isOpen) throw StateError('Hive box $_boxName is not open. Call init() first.');
     await _box.clear();
     if (messages.isEmpty) {
       _invalidateCache();
@@ -76,6 +103,7 @@ class HiveChatController
 
   @override
   Future<void> insertAllMessages(List<Message> messages, {int? index}) async {
+    if (!_box.isOpen) throw StateError('Hive box $_boxName is not open. Call init() first.');
     if (messages.isEmpty) return;
 
     // Index is ignored because Hive does not maintain order
@@ -99,6 +127,10 @@ class HiveChatController
 
   @override
   List<Message> get messages {
+    if (!_box.isOpen) {
+      // This case should ideally not be hit if init() is called and dispose() is managed.
+      return [];
+    }
     if (_cachedMessages != null) {
       return _cachedMessages!;
     }
@@ -118,10 +150,13 @@ class HiveChatController
   Stream<ChatOperation> get operationsStream => _operationsController.stream;
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     _operationsController.close();
     disposeUploadProgress();
     disposeScrollMethods();
+    if (_box.isOpen) {
+      await _box.close();
+    }
   }
 }
 
