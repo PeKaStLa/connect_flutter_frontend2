@@ -35,6 +35,8 @@ samples, guidance on mobile development, and a full API reference.
 - backend with go and supabase (inclusive authentication and postgresDB)
 - for infra use "just" command runner and free OKD (OpenShift cluster inclusive cicd and dev tools)
 - ...
+- BACKEND:
+- https://connect.pockethost.io/_/#/collections?collection=_pb_users_auth_&filter=&sort=-%40rowid
 - ...
 - use JavaScript R-Tree and k-nearest neighbours
 - https://github.com/mourner/rbush
