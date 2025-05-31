@@ -18,14 +18,15 @@ class ZoomButtons extends StatelessWidget {
   final IconData zoomOutIcon;
   final IconData exploreIcon;
   final IconData navigationIcon;
+  final double spaceBetweenButtons;
 
   const ZoomButtons({
     super.key,
     this.minZoom = 1,
     this.maxZoom = 18,
     this.mini = true,
-    this.padding = 2.0,
-    this.alignment = Alignment.topRight,
+    this.padding = 0,
+    this.alignment = Alignment.bottomRight, // Default to bottom-right
     this.zoomInColor,
     this.zoomInColorIcon,
     this.zoomInIcon = Icons.zoom_in,
@@ -34,6 +35,7 @@ class ZoomButtons extends StatelessWidget {
     this.zoomOutIcon = Icons.zoom_out,
     this.exploreIcon = Icons.explore,
     this.navigationIcon = Icons.navigation,
+    this.spaceBetweenButtons = 0, // Default small spacing between buttons
   });
 
   @override
@@ -44,13 +46,12 @@ class ZoomButtons extends StatelessWidget {
 
     return Align(
       alignment: alignment,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Padding(
-            padding:
-                EdgeInsets.only(left: padding, top: padding, right: padding),
-            child: FloatingActionButton(
+      child: Padding( // This Padding controls the distance of the whole button group from the corner
+        padding: EdgeInsets.all(padding), // Use the main 'padding' property here
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            FloatingActionButton(
               heroTag: 'setRotationToZeroButton',
               mini: mini,
               backgroundColor: zoomInColor ?? theme.colorScheme.primary,
@@ -58,21 +59,13 @@ class ZoomButtons extends StatelessWidget {
                 controller.rotate(0);
               },
               child: (camera.rotation.abs() < 0.001) // More robust check for 0 rotation
-              ? Icon(navigationIcon , color: zoomInColorIcon ?? theme.iconTheme.color)
-              : CustomMapCompass(
-                hideIfRotatedNorth: true,
-                // alignment and padding are handled by the FAB and the CustomCupertinoMapCompass defaults
-                // or can be overridden if needed when calling CustomCupertinoMapCompass.
-                // For this specific use inside a FAB, the defaults are likely fine.
-              ),
+                  ? Icon(navigationIcon, color: zoomInColorIcon ?? theme.iconTheme.color)
+                  : const CustomMapCompass( // Added const
+                      hideIfRotatedNorth: true,
+                    ),
             ),
-          ),
-
-
-          Padding(
-            padding:
-                EdgeInsets.only(left: padding, top: padding, right: padding),
-            child: FloatingActionButton(
+            SizedBox(height: spaceBetweenButtons), // Use SizedBox for spacing
+            FloatingActionButton(
               heroTag: 'zoomInButton',
               mini: mini,
               backgroundColor: zoomInColor ?? theme.colorScheme.primary,
@@ -80,14 +73,10 @@ class ZoomButtons extends StatelessWidget {
                 final zoom = min(camera.zoom + 1, maxZoom);
                 controller.move(camera.center, zoom);
               },
-              child: Icon(zoomInIcon,
-                  color: zoomInColorIcon ?? theme.iconTheme.color),
+              child: Icon(zoomInIcon, color: zoomInColorIcon ?? theme.iconTheme.color),
             ),
-          ),
-          
-          Padding(
-            padding: EdgeInsets.all(padding),
-            child: FloatingActionButton(
+            SizedBox(height: spaceBetweenButtons), // Use SizedBox for spacing
+            FloatingActionButton(
               heroTag: 'zoomOutButton',
               mini: mini,
               backgroundColor: zoomOutColor ?? theme.colorScheme.primary,
@@ -95,11 +84,10 @@ class ZoomButtons extends StatelessWidget {
                 final zoom = max(camera.zoom - 1, minZoom);
                 controller.move(camera.center, zoom);
               },
-              child: Icon(zoomOutIcon,
-                  color: zoomOutColorIcon ?? theme.iconTheme.color),
+              child: Icon(zoomOutIcon, color: zoomOutColorIcon ?? theme.iconTheme.color),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

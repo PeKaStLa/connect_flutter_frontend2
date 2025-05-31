@@ -16,10 +16,11 @@ double calculateMarkerSizeForArea(Area area, double currentZoom) {
   return calculatedSize;
 }
 
+
+// show snackbar for 4-5 seconds...
 void navigateToChat(BuildContext context, Area area) {
   _mapUtilsLogger.i('Action for area: ${area.name}');
-  ScaffoldMessenger.of(context).removeCurrentSnackBar(); // Remove previous snackbar
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('Action for: ${area.name}')),
-  );
+  // ScaffoldMessenger.of(context).removeCurrentSnackBar(); // Remove previous snackbar
+  // ScaffoldMessenger.of(context).showSnackBar(
+  // SnackBar(content: Text('Action for: ${area.name}')), );
 }

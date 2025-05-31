@@ -76,19 +76,15 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 130,
-      left: 0,
+      bottom: 80,
+      left: 5,
       right: 60,
       child: Container(
-        height: 250,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
+        height: 400,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(8.0),
           ),
-        ),
         child: Column(
           children: [
             Row(
