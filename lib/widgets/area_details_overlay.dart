@@ -21,9 +21,9 @@ class AreaDetailsOverlay extends StatelessWidget {
 
     // The UI structure is moved here from _buildAreaDetailsOverlay
     return Positioned(
-      bottom: 5.0, // You might want to make these configurable too
+      top: 5.0, // You might want to make these configurable too
       left: 5.0,
-      right: 60.0,
+      right: 5.0,
       child: Material(
         elevation: 4.0,
         borderRadius: BorderRadius.circular(8.0),

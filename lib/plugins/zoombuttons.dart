@@ -48,7 +48,7 @@ class ZoomButtons extends StatelessWidget {
       alignment: alignment,
       child: Padding( // This Padding controls the distance of the whole button group from the corner
         padding: EdgeInsets.all(padding), // Use the main 'padding' property here
-        child: Column(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             FloatingActionButton(

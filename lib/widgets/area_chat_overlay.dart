@@ -5,6 +5,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:connect_flutter/models/area_data.dart'; // Import the Area model
 import 'package:pocketbase/pocketbase.dart'; // Import PocketBase
 import 'package:connect_flutter/controllers/hive_chat_controller.dart'; // Import HiveChatController
+import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service; // Import your service
 import 'package:logger/logger.dart'; // Import the logger package
 
 class AreaChatOverlay extends StatefulWidget {
@@ -43,10 +44,39 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
       
       _chatController = HiveChatController(chatId: sanitizedAreaName);
       await _chatController.init(); // CRITICAL: Call and await init() here
+      _logger.i("HiveChatController initialized for box: ${_chatController.boxName}");
+
+      // Fetch initial messages from PocketBase
+      _logger.i("Fetching initial messages for area: ${widget.area.id}");
+      final initialRecordMessages = await pocketbase_service.getInitialMessages(widget.area.id);
+      _logger.i("Fetched ${initialRecordMessages.length} initial messages from backend for area ${widget.area.id}.");
+
+      final List<Message> chatMessages = initialRecordMessages.map((record) {
+        // --- IMPORTANT: Adjust these field names to match your 'chat_messages' collection in PocketBase ---
+        final String textContent = record.data['message_text'] as String? ?? ''; // Example: field named 'text'
+        final String authorId = record.data['user_id'] as String? ?? 'unknown_user'; // Example: field named 'user' (could be a relation ID)
+        // --- End of fields to adjust ---
+
+        final String messageId = record.id; // Use PocketBase record ID as message ID
+        
+        // PocketBase 'created' field is a UTC string. Parse it.
+        // Fallback to current UTC time if parsing fails or 'created' is missing.
+        final DateTime createdAt = DateTime.tryParse(record.created)?.toLocal() ?? DateTime.now().toUtc();
+
+        return TextMessage(
+          id: messageId,
+          authorId: authorId,
+          createdAt: createdAt,
+          text: textContent,
+        );
+      }).toList();
+
+      // Set messages in the controller. This will replace any existing messages in Hive.
+      await _chatController.setMessages(chatMessages);
+      _logger.i("Set ${chatMessages.length} messages in HiveChatController for area ${widget.area.name}.");
 
       if (mounted) {
         setState(() {
-          // _chatController is already initialized and its _box is now set.
           _isChatReady = true;
         });
       }
@@ -76,11 +106,11 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 80,
+      bottom: 5,
       left: 5,
-      right: 60,
+      right: 5,
       child: Container(
-        height: 400,
+        height: 500,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8.0),
@@ -94,7 +124,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Chat in ${widget.area.name}\n(Box: ${_chatController.boxName})',
+                      'Chat in ${widget.area.name}\nID:${widget.area.id}\n(Box: ${_chatController.boxName})',
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   )

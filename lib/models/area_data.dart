@@ -1,56 +1,48 @@
+import 'package:pocketbase/pocketbase.dart'; // Import PocketBase
+import 'package:logger/logger.dart'; // Import the logger package
+
+final Logger _logger = Logger(); // Initialize a logger for this file
+
 // Define the Area class
 class Area {
   final double centerLatitude;
   final double centerLongitude;
-  final double minLatitude;
-  final double minLongitude;
-  final double maxLatitude;
-  final double maxLongitude;
+  final double? minLatitude;  // Make nullable
+  final double? minLongitude; // Make nullable
+  final double? maxLatitude;  // Make nullable
+  final double? maxLongitude; // Make nullable
   final String name;
+  final String id;
   final double radiusMeter;
 
   Area({
     required this.centerLatitude,
     required this.centerLongitude,
-    required this.minLatitude,
-    required this.minLongitude,
-    required this.maxLatitude,
-    required this.maxLongitude,
+    this.minLatitude,   // Remove required, allow null
+    this.minLongitude,  // Remove required, allow null
+    this.maxLatitude,   // Remove required, allow null
+    this.maxLongitude,  // Remove required, allow null
+    required this.id,
     required this.name,
     required this.radiusMeter,
   });
-}
 
-// List of example areas
-final List<Area> exampleAreas = [
-  Area(
-    name: "Melbourne CBD",
-    centerLatitude: -37.8136,
-    centerLongitude: 144.9631,
-    minLatitude: -37.8186,
-    minLongitude: 144.9581,
-    maxLatitude: -37.8086,
-    maxLongitude: 144.9681,
-    radiusMeter: 1931.0,
-  ),
-  Area(
-    name: "Royal Botanic Gardens",
-    centerLatitude: -37.8300,
-    centerLongitude: 144.9790,
-    minLatitude: -37.8350,
-    minLongitude: 144.9740,
-    maxLatitude: -37.8250,
-    maxLongitude: 144.9840,
-    radiusMeter: 805.0,
-  ),
-  Area(
-    name: "Docklands",
-    centerLatitude: -37.8170,
-    centerLongitude: 144.9420,
-    minLatitude: -37.8220,
-    minLongitude: 144.9370,
-    maxLatitude: -37.8120,
-    maxLongitude: 144.9470,
-    radiusMeter: 1610.0,
-  ),
-];
+
+  factory Area.fromRecord(RecordModel record) {
+    final data = record.data;
+    _logger.i('Creating Area from Record ID: ${record.id}, Data: $data'); // Log the received data
+
+    return Area(
+      id: record.id, 
+      name: data['area_name'] as String? ?? 'Unnamed Area',
+      centerLatitude: double.tryParse(data['center_latitude']?.toString() ?? '') ?? 0.0,
+      centerLongitude: double.tryParse(data['center_longitude']?.toString() ?? '') ?? 0.0,
+      radiusMeter: double.tryParse(data['radius_meter']?.toString() ?? '') ?? 1000.0,
+      // Optionally map min/max if they exist in your PocketBase data
+      minLatitude: double.tryParse(data['min_latitude'].toString()),
+      minLongitude: double.tryParse(data['min_longitude'].toString()),
+      maxLatitude: double.tryParse(data['max_latitude'].toString()),
+      maxLongitude:double.tryParse(data['max_longitude'].toString()),
+    );
+  }
+}

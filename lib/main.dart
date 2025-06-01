@@ -8,8 +8,9 @@ import 'package:connect_flutter/widgets/area_details_overlay.dart'; // Import th
 import 'package:connect_flutter/models/area_data.dart'; // Import the new area data file
 import 'package:connect_flutter/utils/map_utils.dart'; // Import the new utility functions
 import 'package:connect_flutter/widgets/area_chat_overlay.dart'; // Import the chat overlay
-import 'package:pocketbase/pocketbase.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service; // Import your service
+import 'package:logger/logger.dart'; // Import the logger package
  
 void main() async {
   await Hive.initFlutter(); // Initialize Hive for Flutter
@@ -42,12 +43,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  // Use the pb instance from your service file if you want to share it,
+  // or keep a local one if preferred for this widget.
+  // For this example, we'll use the one from the service for fetching areas.
   late MapController mapController;
-  final pb = PocketBase('https://my-pb-318455951907.australia-southeast2.run.app');
   double _currentZoom = 12.0; // State variable to hold the current zoom level
   Area? _currentlyHoveredArea;
   Area? _currentlyClickedArea;
   Area? _chattingInArea; // State to manage which area's chat is open
+  List<Area> _mapAreas = []; // To store areas fetched from PocketBase
+  bool _isLoadingAreas = true; // To manage loading state
+  String? _loadingError; // To store any error message during loading
+  final Logger _logger = Logger(); // Initialize a logger for this state
 
   @override
   void initState() {
@@ -55,6 +62,74 @@ class _MyHomePageState extends State<MyHomePage> {
     mapController = MapController();
     
     // _currentZoom is initialized. It will be updated by onPositionChanged.
+    _fetchMapAreas();
+  }
+
+  Future<void> _fetchMapAreas() async {
+    _logger.d("_fetchMapAreas started. mounted: $mounted");
+    if (!mounted) {
+      _logger.w("_fetchMapAreas: widget not mounted, returning.");
+      return;
+    }
+
+    setState(() {
+      _isLoadingAreas = true;
+      _loadingError = null;
+      _logger.d("_fetchMapAreas: setState called, _isLoadingAreas = true");
+    });
+
+    try {
+      _logger.i("Attempting to fetch areas from pocketbase_service...");
+      final records = await pocketbase_service.getAreas();
+      _logger.i("Successfully fetched ${records.length} records from PocketBase.");
+
+      if (!mounted) {
+        _logger.w("_fetchMapAreas: widget not mounted after fetching records, returning.");
+        return;
+      }
+
+      _logger.i("Mapping records to Area objects...");
+      final areas = records.map((record) {
+        _logger.d("Mapping record ID: ${record.id}");
+        try {
+          return Area.fromRecord(record);
+        } catch (e, s) {
+          _logger.e("Error in Area.fromRecord for ID ${record.id}", error: e, stackTrace: s);
+          rethrow; // Propagate error to be caught by the outer try-catch
+        }
+      }).toList();
+      _logger.i("Successfully mapped ${areas.length} Area objects.");
+
+      if (mounted) {
+        setState(() {
+          _mapAreas = areas;
+          _logger.d("_fetchMapAreas: setState called, _mapAreas updated with ${areas.length} areas.");
+        });
+      } else {
+         _logger.w("_fetchMapAreas: widget not mounted before final setState for _mapAreas.");
+      }
+    } catch (e, stackTrace) {
+      _logger.e("Error in _fetchMapAreas", error: e, stackTrace: stackTrace);
+      if (mounted) {
+        setState(() {
+          _loadingError = "Failed to load areas: $e";
+          _logger.d("_fetchMapAreas: setState called, _loadingError updated.");
+        });
+      } else {
+        _logger.w("_fetchMapAreas: widget not mounted when handling error.");
+      }
+    } finally {
+      _logger.d("_fetchMapAreas: finally block executing. mounted: $mounted");
+      if (mounted) {
+        setState(() {
+          _isLoadingAreas = false;
+          _logger.d("_fetchMapAreas: setState called in finally, _isLoadingAreas = false");
+        });
+      } else {
+        _logger.w("_fetchMapAreas: widget not mounted in finally block.");
+      }
+      _logger.d("_fetchMapAreas finished.");
+    }
   }
 
   // This function now primarily updates the current zoom and triggers a rebuild
@@ -103,13 +178,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 } else if (_currentlyClickedArea?.name != area.name) {
                   _currentlyClickedArea = area; // Select this new area
                 }
-
                 if (_chattingInArea != null) {
                   _chattingInArea = area;          
                 }
-
                 _currentlyHoveredArea = null; // Clear hover state on tap
-              
               });
             }
           },
@@ -147,7 +219,16 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text('${widget.title} - Zoom: ${_currentZoom.toStringAsFixed(2)}'),
       ),
-      body: Stack( // Use Stack to overlay widgets
+      body: _isLoadingAreas
+          ? const Center(child: CircularProgressIndicator())
+          : _loadingError != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text('Error: $_loadingError', style: const TextStyle(color: Colors.red)),
+                  ))
+              : 
+         Stack( // Use Stack to overlay widgets
         children: [
 
       FlutterMap(
@@ -166,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Or, only close chat if it's open, otherwise close details
                 if (_chattingInArea == null && _currentlyClickedArea != null) {
                   _currentlyClickedArea = null;
-                } else if (_chattingInArea != null && _currentlyClickedArea != null) {
+                } else if (_chattingInArea != null) {
                   _chattingInArea = null;
                 } 
                 
@@ -192,7 +273,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           // Add the MarkerLayer for clickable and hoverable areas
           MarkerLayer(
-            markers: exampleAreas.map(_buildAreaMarker).toList(),
+            markers: _mapAreas.map(_buildAreaMarker).toList(), // Use fetched areas
           ),
   
           // Add the ZoomButtons plugin here
@@ -224,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
             AreaChatOverlay(
               key: ValueKey(_chattingInArea!.name), 
               area: _chattingInArea!,
-              pb: pb,
+              pb: pocketbase_service.pb, // Pass the PocketBase instance
               onClose: () {
                 if (mounted) {
                   setState(() {
