@@ -3,6 +3,18 @@ import 'package:logger/logger.dart'; // Import the logger package
 
 final Logger _logger = Logger(); // Initialize a logger for this file
 
+// Constants for PocketBase field names within the 'areas' collection
+class _AreaFieldKeys {
+  static const String areaName = 'area_name';
+  static const String centerLatitude = 'center_latitude';
+  static const String centerLongitude = 'center_longitude';
+  static const String radiusMeter = 'radius_meter';
+  static const String minLatitude = 'min_latitude';
+  static const String minLongitude = 'min_longitude';
+  static const String maxLatitude = 'max_latitude';
+  static const String maxLongitude = 'max_longitude';
+}
+
 // Define the Area class
 class Area {
   final double centerLatitude;
@@ -34,15 +46,15 @@ class Area {
 
     return Area(
       id: record.id, 
-      name: data['area_name'] as String? ?? 'Unnamed Area',
-      centerLatitude: double.tryParse(data['center_latitude']?.toString() ?? '') ?? 0.0,
-      centerLongitude: double.tryParse(data['center_longitude']?.toString() ?? '') ?? 0.0,
-      radiusMeter: double.tryParse(data['radius_meter']?.toString() ?? '') ?? 1000.0,
+      name: data[_AreaFieldKeys.areaName] as String? ?? 'Unnamed Area',
+      centerLatitude: double.tryParse(data[_AreaFieldKeys.centerLatitude]?.toString() ?? '') ?? 0.0,
+      centerLongitude: double.tryParse(data[_AreaFieldKeys.centerLongitude]?.toString() ?? '') ?? 0.0,
+      radiusMeter: double.tryParse(data[_AreaFieldKeys.radiusMeter]?.toString() ?? '') ?? 1000.0,
       // Optionally map min/max if they exist in your PocketBase data
-      minLatitude: double.tryParse(data['min_latitude'].toString()),
-      minLongitude: double.tryParse(data['min_longitude'].toString()),
-      maxLatitude: double.tryParse(data['max_latitude'].toString()),
-      maxLongitude:double.tryParse(data['max_longitude'].toString()),
+      minLatitude: double.tryParse(data[_AreaFieldKeys.minLatitude]?.toString() ?? ''),
+      minLongitude: double.tryParse(data[_AreaFieldKeys.minLongitude]?.toString() ?? ''),
+      maxLatitude: double.tryParse(data[_AreaFieldKeys.maxLatitude]?.toString() ?? ''),
+      maxLongitude: double.tryParse(data[_AreaFieldKeys.maxLongitude]?.toString() ?? ''),
     );
   }
 }

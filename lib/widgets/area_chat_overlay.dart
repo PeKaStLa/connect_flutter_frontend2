@@ -1,12 +1,14 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:connect_flutter/models/area_data.dart'; // Import the Area model
 import 'package:pocketbase/pocketbase.dart'; // Import PocketBase
 import 'package:connect_flutter/controllers/hive_chat_controller.dart'; // Import HiveChatController
-import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service; // Import your service
+import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service; // Still needed for getInitialMessages
+import 'package:connect_flutter/services/chat_middleware_local_backend.dart' as chat_middleware; // Import the new middleware
+import 'package:connect_flutter/constants/pocketbase_constants.dart'; // Import constants
 import 'package:logger/logger.dart'; // Import the logger package
+
 
 class AreaChatOverlay extends StatefulWidget {
   final Area area;
@@ -16,8 +18,8 @@ class AreaChatOverlay extends StatefulWidget {
   const AreaChatOverlay({
     super.key,
     required this.area,
+    required this.pb,
     required this.onClose,
-    required this.pb, // Require PocketBase instance
   });
 
   @override
@@ -53,8 +55,8 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
 
       final List<Message> chatMessages = initialRecordMessages.map((record) {
         // --- IMPORTANT: Adjust these field names to match your 'chat_messages' collection in PocketBase ---
-        final String textContent = record.data['message_text'] as String? ?? ''; // Example: field named 'text'
-        final String authorId = record.data['user_id'] as String? ?? 'unknown_user'; // Example: field named 'user' (could be a relation ID)
+        final String textContent = record.data[PocketBaseChatFields.messageText] as String? ?? '';
+        final String authorId = record.data[PocketBaseChatFields.userId] as String? ?? 'unknown_user';
         // --- End of fields to adjust ---
 
         final String messageId = record.id; // Use PocketBase record ID as message ID
@@ -167,14 +169,12 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
     return Chat(
       chatController: _chatController,
       currentUserId: widget.pb.authStore.model?.id ?? 'guest_user', // Use PocketBase user or a default
-      onMessageSend: (text) {
-        _chatController.insertMessage(
-          TextMessage(
-            id: '${DateTime.now().millisecondsSinceEpoch}-${Random().nextInt(10000)}', // More unique ID
-            authorId: widget.pb.authStore.model?.id ?? 'guest_user',
-            createdAt: DateTime.now().toUtc(),
-            text: text,
-          ),
+      onMessageSend: (String messageText) async { // Inlined _handleSendMessage logic
+        await chat_middleware.processAndSendChatMessage(
+          chatController: _chatController,
+          areaId: widget.area.id,
+          messageText: messageText,
+          currentUserPb: widget.pb, // Pass the PocketBase instance from the widget
         );
       },
       resolveUser: (UserID id) async {
