@@ -48,9 +48,9 @@ class _MyHomePageState extends State<MyHomePage> {
   // For this example, we'll use the one from the service for fetching areas.
   late MapController mapController;
   double _currentZoom = 12.0; // State variable to hold the current zoom level
-  Area? _currentlyHoveredArea;
-  Area? _currentlyClickedArea;
-  Area? _chattingInArea; // State to manage which area's chat is open
+  Area? _currentlyDetailedArea;
+  Area? _currentlyColoredArea;
+  Area? _currentlyChattedArea; // State to manage which area's chat is open
   List<Area> _mapAreas = []; // To store areas fetched from PocketBase
   bool _isLoadingAreas = true; // To manage loading state
   String? _loadingError; // To store any error message during loading
@@ -145,8 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Extracted function to build a single area marker
   Marker _buildAreaMarker(Area area) {
-    final bool isHovered = _currentlyHoveredArea?.name == area.name;
-    final bool isClicked = _currentlyClickedArea?.name == area.name;
+    final bool isColored = _currentlyColoredArea?.name == area.name;
     final double calculatedMarkerSize = calculateMarkerSizeForArea(area, _currentZoom);
 
     return Marker(
@@ -154,42 +153,37 @@ class _MyHomePageState extends State<MyHomePage> {
       width: calculatedMarkerSize,
       height: calculatedMarkerSize,
       child: MouseRegion(
-        onEnter: (event) {
-          if (mounted) {
-            setState(() {
-              _currentlyHoveredArea = area;
-              // _currentlyClickedArea = null; // Keep clicked area selected on hover
-            });
-          }
-        },
-        onExit: (event) {
-          if (mounted) {
-            setState(() {
-              _currentlyHoveredArea = null;
-            });
-          }
-        },
         child: GestureDetector(
           onTap: () {
             if (mounted) {
               setState(() {
-                if (_currentlyClickedArea?.name == area.name) {
-                  _currentlyClickedArea = null; // Deselect if tapped again
-                } else if (_currentlyClickedArea?.name != area.name) {
-                  _currentlyClickedArea = area; // Select this new area
+
+                if (_currentlyChattedArea != null) {
+                  _currentlyChattedArea = null;          
                 }
-                if (_chattingInArea != null) {
-                  _chattingInArea = area;          
+
+                // Determine the new state for _currentlyDetailedArea.
+                // It's generally better to compare objects by a unique ID if available.
+                // Here, we'll continue using 'name' as per the surrounding code,
+                // but be mindful that non-unique names could lead to unexpected behavior.
+                final bool isCurrentlyDetailed = _currentlyDetailedArea?.name == area.name;
+
+                if (isCurrentlyDetailed) {
+                  _currentlyDetailedArea = null; // Deselect if tapped again
+                } else {
+                  _currentlyDetailedArea = area; // Select this new area
                 }
-                _currentlyHoveredArea = null; // Clear hover state on tap
+                // Update _currentlyColoredArea to be the new _currentlyDetailedArea.
+                // This correctly assigns the Area object (or null) to _currentlyColoredArea.
+                _currentlyColoredArea = _currentlyDetailedArea;
               });
             }
           },
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.blue.withAlpha(isClicked ? 200 : isHovered ? 120 : 100),
-              border: Border.all(color: Colors.blue.shade700, width: isClicked ? 3 : 2),
+              color: Colors.blue.withAlpha(isColored ? 210 : 100),
+              border: Border.all(color: Colors.blue.shade700, width: isColored ? 3 : 2),
             ),
             alignment: Alignment.center,
             child: Text(
@@ -230,7 +224,6 @@ class _MyHomePageState extends State<MyHomePage> {
               : 
          Stack( // Use Stack to overlay widgets
         children: [
-
       FlutterMap(
         mapController: mapController, // Assign the mapController
         options: MapOptions(
@@ -242,15 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
             if (mounted) {
               setState(() {
                 // Close both overlays if map is tapped
-                // _currentlyClickedArea = null;
-                // _chattingInArea = null;
-                // Or, only close chat if it's open, otherwise close details
-                if (_chattingInArea == null && _currentlyClickedArea != null) {
-                  _currentlyClickedArea = null;
-                } else if (_chattingInArea != null) {
-                  _chattingInArea = null;
-                } 
-                
+                _currentlyDetailedArea = _currentlyChattedArea = _currentlyColoredArea = null;
               });
             }
           },
@@ -288,28 +273,28 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
         // Use the new AreaDetailsOverlay widget
         AreaDetailsOverlay(
-          currentlyClickedArea: _currentlyClickedArea,
+          area: _currentlyDetailedArea,
           onChatNavigation: (area) {
             navigateToChat(context, area); // Use extracted function
                 if (mounted) {
                   setState(() {
-                    _chattingInArea = area;
+                    _currentlyChattedArea = area;
                   });
                 }          },
           onClose: () {
-            if (mounted) setState(() => _currentlyClickedArea = null);
+            if (mounted) setState(() => _currentlyDetailedArea = null);
           },
         ),
           // Conditionally display MapChatOverlay
-          if (_chattingInArea != null)
+          if (_currentlyChattedArea != null)
             AreaChatOverlay(
-              key: ValueKey(_chattingInArea!.name), 
-              area: _chattingInArea!,
+              key: ValueKey(_currentlyChattedArea!.name), 
+              area: _currentlyChattedArea!,
               pb: pocketbase_service.pb, // Pass the PocketBase instance
               onClose: () {
                 if (mounted) {
                   setState(() {
-                    _chattingInArea = null;
+                    _currentlyChattedArea = null;
                   });
                 }
               },

@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:connect_flutter/models/area_data.dart'; // For the Area class
 
 class AreaDetailsOverlay extends StatelessWidget {
-  final Area? currentlyClickedArea;
-  final Function(Area) onChatNavigation;
+  final Area? area;
+  final Function(Area) onChatNavigation; // This callback expects a non-null Area
   final VoidCallback onClose;
 
   const AreaDetailsOverlay({
     super.key,
-    required this.currentlyClickedArea,
+    required this.area,
     required this.onChatNavigation,
     required this.onClose,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (currentlyClickedArea == null) {
-      return const SizedBox.shrink(); // Return an empty widget if no area is clicked
+
+    if (area == null) {
+      return const SizedBox.shrink(); // Render nothing if area is null
     }
 
     // The UI structure is moved here from _buildAreaDetailsOverlay
@@ -39,7 +40,7 @@ class AreaDetailsOverlay extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Area: ${currentlyClickedArea!.name}\nUsers in area: 12345', // Placeholder for user count
+                  'Area: ${area?.name}\nUsers in area: 12345', // Use currentArea (non-null)
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium
@@ -49,7 +50,7 @@ class AreaDetailsOverlay extends StatelessWidget {
               const SizedBox(width: 8), // Add some space between text and buttons
               TextButton(
                 onPressed: () {
-                  onChatNavigation(currentlyClickedArea!);
+                  onChatNavigation(area!); // Pass the non-null currentArea
                 },
                 child: const Text('Chat'),
               ),
