@@ -4,13 +4,13 @@ import 'package:connect_flutter/models/area_data.dart'; // For the Area class
 class AreaDetailsOverlay extends StatelessWidget {
   final Area? area;
   final Function(Area) onChatNavigation; // This callback expects a non-null Area
-  final VoidCallback onClose;
+  final VoidCallback? onClose;
 
   const AreaDetailsOverlay({
     super.key,
     required this.area,
     required this.onChatNavigation,
-    required this.onClose,
+    this.onClose,
   });
 
   @override
@@ -54,11 +54,7 @@ class AreaDetailsOverlay extends StatelessWidget {
                 },
                 child: const Text('Chat'),
               ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: onClose,
-                tooltip: 'Close',
-              ),
+              // IconButton( icon: const Icon(Icons.close), onPressed: onClose, tooltip: 'Close', ),
             ],
           ),
         ),

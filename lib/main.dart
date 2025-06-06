@@ -145,7 +145,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Extracted function to build a single area marker
   Marker _buildAreaMarker(Area area) {
-    final bool isColored = _currentlyColoredArea?.name == area.name;
+    bool isColored = _currentlyColoredArea?.name == area.name;
+    
     final double calculatedMarkerSize = calculateMarkerSizeForArea(area, _currentZoom);
 
     return Marker(
@@ -158,24 +159,13 @@ class _MyHomePageState extends State<MyHomePage> {
             if (mounted) {
               setState(() {
 
-                if (_currentlyChattedArea != null) {
-                  _currentlyChattedArea = null;          
+                if (_currentlyDetailedArea?.name != area.name) {
+                  _currentlyDetailedArea = area;
+                  _currentlyColoredArea = area;
+                  _currentlyChattedArea = null;
+                } else if (_currentlyDetailedArea?.name == area.name) {
+                  _currentlyChattedArea = area;
                 }
-
-                // Determine the new state for _currentlyDetailedArea.
-                // It's generally better to compare objects by a unique ID if available.
-                // Here, we'll continue using 'name' as per the surrounding code,
-                // but be mindful that non-unique names could lead to unexpected behavior.
-                final bool isCurrentlyDetailed = _currentlyDetailedArea?.name == area.name;
-
-                if (isCurrentlyDetailed) {
-                  _currentlyDetailedArea = null; // Deselect if tapped again
-                } else {
-                  _currentlyDetailedArea = area; // Select this new area
-                }
-                // Update _currentlyColoredArea to be the new _currentlyDetailedArea.
-                // This correctly assigns the Area object (or null) to _currentlyColoredArea.
-                _currentlyColoredArea = _currentlyDetailedArea;
               });
             }
           },
@@ -280,10 +270,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   setState(() {
                     _currentlyChattedArea = area;
                   });
-                }          },
-          onClose: () {
-            if (mounted) setState(() => _currentlyDetailedArea = null);
+                }          
           },
+          // onClose: () {  if (mounted) setState(() => _currentlyDetailedArea = null);  },
         ),
           // Conditionally display MapChatOverlay
           if (_currentlyChattedArea != null)
@@ -292,12 +281,8 @@ class _MyHomePageState extends State<MyHomePage> {
               area: _currentlyChattedArea!,
               pb: pocketbase_service.pb, // Pass the PocketBase instance
               onClose: () {
-                if (mounted) {
-                  setState(() {
-                    _currentlyChattedArea = null;
-                  });
-                }
-              },
+                if (mounted) setState(() => _currentlyChattedArea = null);
+                },
             ),
         ]
       )
