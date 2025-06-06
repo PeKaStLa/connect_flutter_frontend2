@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:hive_ce/hive.dart';
-import 'package:connect_flutter/services/chatboxcacheclass.dart'; // Import your service
+import 'package:connect_flutter/services/chat_box_cache_class.dart'; // Import your service
 
 class HiveChatController
     with UploadProgressMixin, ScrollToMessageMixin

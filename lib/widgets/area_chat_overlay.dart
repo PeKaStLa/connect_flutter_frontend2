@@ -8,7 +8,7 @@ import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service;
 import 'package:connect_flutter/services/chat_middleware_local_backend.dart' as chat_middleware; // Import the new middleware
 import 'package:connect_flutter/constants/pocketbase_constants.dart'; // Import constants
 import 'package:logger/logger.dart'; // Import the logger package
-import 'package:connect_flutter/services/chatboxcacheclass.dart'; // Import your service
+import 'package:connect_flutter/services/chat_box_cache_class.dart'; // Import your service
 
 
 class AreaChatOverlay extends StatefulWidget {
@@ -46,7 +46,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
 
 
   Future<void> _loadChatFromCacheOrInitialize() async {
-    final boxName = _generateBoxName(widget.area.name);
+    final boxName = _generateBoxName(widget.area.id);
 
     // Ensure the Hive box is open. ChatBoxCache().getBox() will return the opened
     // Box or throw an exception if it fails. It does not return null.
@@ -77,7 +77,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
     try {
       // Sanitize the area name to make it a safe box name.
       // Replace spaces and special characters. Adjust regex as needed.
-    final boxName = _generateBoxName(widget.area.name);
+    final boxName = _generateBoxName(widget.area.id);
 
       _chatController = HiveChatController(chatId: boxName);
       await _chatController.init(); // CRITICAL: Call and await init() here
@@ -128,14 +128,14 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
     }
   }
 
-/*
+
   @override
   void dispose() {
     // Only dispose if the controller was successfully initialized
     
     if (_isChatReady) {
       // _chatController.dispose() is async.
-       atController.dispose().catchError((e, s) {
+       _chatController.dispose().catchError((e, s) {
         _logger.e("Error disposing chat controller for ${widget.area.name}", error: e, stackTrace: s);
       });
     }
@@ -143,7 +143,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
     ChatBoxCache().closeAll();
   
   }
-  */
+  
 
   @override
   Widget build(BuildContext context) {
