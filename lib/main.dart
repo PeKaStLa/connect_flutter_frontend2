@@ -146,7 +146,6 @@ class _MyHomePageState extends State<MyHomePage> {
   // Extracted function to build a single area marker
   Marker _buildAreaMarker(Area area) {
     bool isColored = _currentlyColoredArea?.name == area.name;
-    
     final double calculatedMarkerSize = calculateMarkerSizeForArea(area, _currentZoom);
 
     return Marker(

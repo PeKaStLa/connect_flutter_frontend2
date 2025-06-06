@@ -93,6 +93,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
     }
   }
 
+  /*
   @override
   void dispose() {
     // Only dispose if the controller was successfully initialized
@@ -104,6 +105,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
     }
     super.dispose();
   }
+*/
 
   @override
   Widget build(BuildContext context) {
