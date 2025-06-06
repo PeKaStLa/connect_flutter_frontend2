@@ -17,7 +17,7 @@ class HiveChatController
   /// [chatId] is used to create a unique box name for this chat instance.
   /// It's recommended to sanitize [chatId] if it comes from user input or
   /// could contain characters not suitable for file names.
-  HiveChatController({required String chatId}) : _boxName = 'box_$chatId';
+  HiveChatController({required String chatId}) : _boxName = chatId;
 
   /// Initializes the controller by opening its specific Hive box.
   /// This must be called before using the controller.

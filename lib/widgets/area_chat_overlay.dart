@@ -36,22 +36,50 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
   @override
   void initState() {
     super.initState();
-    _initializeChat();
+    _loadChatFromCacheOrInitialize();
   }
 
-  @override
-  void dispose() {
-    ChatBoxCache().closeAll();
-    super.dispose();
+    String _generateBoxName(String areaName) {
+    final sanitizedAreaName = areaName.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+    return 'box_$sanitizedAreaName';
   }
+
+
+  Future<void> _loadChatFromCacheOrInitialize() async {
+    final boxName = _generateBoxName(widget.area.name);
+
+    // Ensure the Hive box is open. ChatBoxCache().getBox() will return the opened
+    // Box or throw an exception if it fails. It does not return null.
+    final cachedBox = await  ChatBoxCache().getBox(boxName); // Variable 'cachedBox' is not strictly needed now.
+
+    // The box is now open (either retrieved from cache or newly opened by ChatBoxCache).
+    // Proceed to initialize the controller with data from this local Hive box.
+    _logger.i("Chat box $boxName is open. Initializing controller from local Hive data.");
+    _chatController = HiveChatController(chatId: boxName);
+    await _chatController.init(); // Initialize the controller.
+
+    if (mounted) {
+      setState(() {
+        _isChatReady = true;
+      });
+    }
+    // The 'return;' was part of the original 'if' block.
+    // The subsequent lines calling _initializeChat() are now effectively removed
+    // from this execution path as they were the 'else' part of the always-true condition.
+    if (cachedBox.isEmpty) {
+      _initializeChat(); // Your API call
+    }
+
+  }
+
 
   Future<void> _initializeChat() async {
     try {
       // Sanitize the area name to make it a safe box name.
       // Replace spaces and special characters. Adjust regex as needed.
-      final sanitizedAreaName = widget.area.name.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
-      
-      _chatController = HiveChatController(chatId: sanitizedAreaName);
+    final boxName = _generateBoxName(widget.area.name);
+
+      _chatController = HiveChatController(chatId: boxName);
       await _chatController.init(); // CRITICAL: Call and await init() here
       _logger.i("HiveChatController initialized for box: ${_chatController.boxName}");
 
@@ -100,17 +128,22 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
     }
   }
 
+/*
   @override
   void dispose() {
     // Only dispose if the controller was successfully initialized
+    
     if (_isChatReady) {
       // _chatController.dispose() is async.
-      _chatController.dispose().catchError((e, s) {
+       atController.dispose().catchError((e, s) {
         _logger.e("Error disposing chat controller for ${widget.area.name}", error: e, stackTrace: s);
       });
     }
     super.dispose();
+    ChatBoxCache().closeAll();
+  
   }
+  */
 
   @override
   Widget build(BuildContext context) {
