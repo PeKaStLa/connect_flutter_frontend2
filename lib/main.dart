@@ -11,11 +11,14 @@ import 'package:connect_flutter/widgets/area_chat_overlay.dart'; // Import the c
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service; // Import your service
 import 'package:logger/logger.dart'; // Import the logger package
- 
+
 void main() async {
   await Hive.initFlutter(); // Initialize Hive for Flutter
   runApp(const MyApp());
 }
+
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

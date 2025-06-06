@@ -8,6 +8,7 @@ import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service;
 import 'package:connect_flutter/services/chat_middleware_local_backend.dart' as chat_middleware; // Import the new middleware
 import 'package:connect_flutter/constants/pocketbase_constants.dart'; // Import constants
 import 'package:logger/logger.dart'; // Import the logger package
+import 'package:connect_flutter/services/chatboxcacheclass.dart'; // Import your service
 
 
 class AreaChatOverlay extends StatefulWidget {
@@ -36,6 +37,12 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
   void initState() {
     super.initState();
     _initializeChat();
+  }
+
+  @override
+  void dispose() {
+    ChatBoxCache().closeAll();
+    super.dispose();
   }
 
   Future<void> _initializeChat() async {

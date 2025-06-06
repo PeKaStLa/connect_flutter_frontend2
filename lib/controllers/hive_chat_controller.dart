@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:connect_flutter/services/chatboxcacheclass.dart'; // Import your service
 
 class HiveChatController
     with UploadProgressMixin, ScrollToMessageMixin
@@ -23,7 +23,8 @@ class HiveChatController
   /// This must be called before using the controller.
   Future<void> init() async {
     // Hive.initFlutter() should have been called once in main.dart
-    _box = await Hive.openBox(_boxName);
+    _box = await ChatBoxCache().getBox(_boxName);
+    // _box = await Hive.openBox(_boxName);
     // Emit an initial state to ensure the Chat widget loads existing messages.
     if (_box.isNotEmpty && messages.isNotEmpty) { // Accessing messages getter will load from _box
       _operationsController.add(ChatOperation.set(messages));
