@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:math';
 import 'dart:core'; // For math.cos, math.pow
 import 'package:connect_flutter/plugins/zoombuttons.dart';
 import 'package:connect_flutter/misc/tile_providers.dart';
@@ -67,6 +68,25 @@ class _MyHomePageState extends State<MyHomePage> {
     // _currentZoom is initialized. It will be updated by onPositionChanged.
     _fetchMapAreas();
   }
+
+
+void _adjustMapCenter(double areaLatitude, double areaLongitude) {
+  if (!mounted) {
+    _logger.w("_adjustMapCenter: Widget not mounted, cannot adjust map center.");
+    return;
+  }
+
+  final LatLng currentCenter = mapController.camera.center;
+  final double currentZoom = mapController.camera.zoom;
+  // Calculate the offset in latitude degrees
+  double offset = (0.26) * (1 / pow(2, currentZoom - 10));
+  // Calculate the new center point
+  LatLng newCenter = LatLng(areaLatitude - offset, areaLongitude);
+  mapController.move(newCenter, currentZoom);
+  snackbar(context, ' changed from oldCenter: $currentCenter to newCenter: $newCenter'); // Use extracted function
+}
+
+
 
   Future<void> _fetchMapAreas() async {
     _logger.d("_fetchMapAreas started. mounted: $mounted");
@@ -168,6 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _currentlyChattedArea = null;
                 } else if (_currentlyDetailedArea?.name == area.name) {
                   _currentlyChattedArea = area;
+                  _adjustMapCenter(area.centerLatitude, area.centerLongitude); // Pass lat and long separately
                 }
               });
             }
@@ -268,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
         AreaDetailsOverlay(
           area: _currentlyDetailedArea,
           onChatNavigation: (area) {
-            navigateToChat(context, area); // Use extracted function
+            snackbar(context, area.name); // Use extracted function
                 if (mounted) {
                   setState(() {
                     _currentlyChattedArea = area;
