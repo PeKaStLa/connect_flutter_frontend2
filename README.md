@@ -59,8 +59,9 @@ samples, guidance on mobile development, and a full API reference.
     x = 13.2: y ≈ 6170 * (13.2)^6.77 / 100 ≈ 1603.45 (actual value: 1600)
     x = 11.9: y ≈ 6170 * (11.9)^6.77 / 100 ≈ 4004.19 (actual value: 4000)
 
-This formula seems to fit the data much better. Keep in mind that this is still an approximation, and there might be other formulas that fit the data even better.
 
 
+- ALSO: find out best zoom? When only area is visible or also areas around this area?????
+- ...
 
 

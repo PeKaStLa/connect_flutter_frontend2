@@ -79,7 +79,7 @@ void _adjustMapCenter(double areaLatitude, double areaLongitude) {
   final LatLng currentCenter = mapController.camera.center;
   final double currentZoom = mapController.camera.zoom;
   // Calculate the offset in latitude degrees
-  double offset = (0.26) * (1 / pow(2, currentZoom - 10));
+  double offset = (0.245) * (1 / pow(2, currentZoom - 10));
   // Calculate the new center point
   LatLng newCenter = LatLng(areaLatitude - offset, areaLongitude);
   mapController.move(newCenter, currentZoom);
