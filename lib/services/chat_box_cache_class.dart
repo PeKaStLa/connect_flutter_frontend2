@@ -27,7 +27,7 @@ class ChatBoxCache {
 
     // Limit to 5 entries
     // doesnt matter, as long as box is not closed it stays available and open
-    if (_recentKeys.length > 5) {
+    if (_recentKeys.length > 2) {
       String removedKey = _recentKeys.removeLast();
       await _cache[removedKey]?.close(); // Optional: close the box
       _cache.remove(removedKey);
