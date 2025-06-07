@@ -44,4 +44,11 @@ samples, guidance on mobile development, and a full API reference.
 - ...
 - TODO:
 - calculate area perimeter and PIXEL based on the Latitude! If not the same circles at Antarctica and Äquator would be same size even though they should be really different sized.
+- improve chat cache. Evtl. ist der komplett nutzlos. Evtl. reicht es aus die Hive-Boxes nicht zu schließen, dass der chatcontroller den cache/memory selbst managed?
+- Wenn das Chat overlay geöffnet und generiert wird kommt oft der Fehler: EBLASTBufferQueue(21326): SurfaceView[com.example.connect_flutter/com.example.connect_flutter. MainActivity ] # 1 acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 4 max:2 + 2
+- ...
+- ...
+
+
+
 
