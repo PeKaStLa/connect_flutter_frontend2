@@ -48,6 +48,18 @@ samples, guidance on mobile development, and a full API reference.
 - Wenn das Chat overlay geöffnet und generiert wird kommt oft der Fehler: EBLASTBufferQueue(21326): SurfaceView[com.example.connect_flutter/com.example.connect_flutter. MainActivity ] # 1 acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 4 max:2 + 2
 - => chatgpt says: Don’t forget: Hive boxes should not be reopened after being closed without calling Hive.openBox again. So cache disposal should only happen when you’re truly done with the data (e.g., leaving chat or app exit).
 - ...
+- ....
+- ....
+- ....
+- later change zoom when tapped area is too big or too small the make sure it gets shown in optimal size. Maybe use this formular: y ≈ 6170 * x^6.77 / 100
+
+    x = 12.75: y ≈ 6170 * (12.75)^6.77 / 100 ≈ 2303.49 (actual value: 2300)
+    x = 11: y ≈ 6170 * (11)^6.77 / 100 ≈ 7613.89 (actual value: 7600)
+    x = 14: y ≈ 6170 * (14)^6.77 / 100 ≈ 810.13 (actual value: 800)
+    x = 13.2: y ≈ 6170 * (13.2)^6.77 / 100 ≈ 1603.45 (actual value: 1600)
+    x = 11.9: y ≈ 6170 * (11.9)^6.77 / 100 ≈ 4004.19 (actual value: 4000)
+
+This formula seems to fit the data much better. Keep in mind that this is still an approximation, and there might be other formulas that fit the data even better.
 
 
 
