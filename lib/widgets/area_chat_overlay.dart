@@ -31,7 +31,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
   late HiveChatController _chatController;
   bool _isChatReady = false;
   String? _initializationError;
-  final Logger _logger = Logger(); // Initialize the logger
+  final Logger _logger = Logger(); // Initialize the loggerrrrr
 
   @override
   void initState() {
