@@ -70,20 +70,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-void _adjustMapCenter(double areaLatitude, double areaLongitude) {
+void _adjustMapCenter(double areaLatitude, double areaLongitude, double areaRadius) {
   if (!mounted) {
     _logger.w("_adjustMapCenter: Widget not mounted, cannot adjust map center.");
     return;
   }
 
-  final LatLng currentCenter = mapController.camera.center;
-  final double currentZoom = mapController.camera.zoom;
+  final double newZoom = (-1.425 * log(areaRadius) + 24.135);
   // Calculate the offset in latitude degrees
-  double offset = (0.23) * (1 / pow(2, currentZoom - 10));
-  // Calculate the new center point
-  LatLng newCenter = LatLng(areaLatitude - offset, areaLongitude);
-  mapController.move(newCenter, currentZoom);
-  snackbar(context, ' changed from oldCenter: $currentCenter to newCenter: $newCenter'); // Use extracted function
+  double offset = (0.23) * (1 / pow(2, newZoom - 10));
+  // calculate new Center with offset
+  LatLng newCenter = LatLng(areaLatitude - offset, areaLongitude); 
+  mapController.move(newCenter, newZoom);
+  // snackbar(context, ' changed from oldCenter: $currentCenter to newCenter: $newCenter'); // Use extracted function
 }
 
 
@@ -188,7 +187,7 @@ void _adjustMapCenter(double areaLatitude, double areaLongitude) {
                   _currentlyChattedArea = null;
                 } else if (_currentlyDetailedArea?.name == area.name) {
                   _currentlyChattedArea = area;
-                  _adjustMapCenter(area.centerLatitude, area.centerLongitude); // Pass lat and long separately
+                  _adjustMapCenter(area.centerLatitude, area.centerLongitude, area.radiusMeter); 
                 }
               });
             }
@@ -289,12 +288,12 @@ void _adjustMapCenter(double areaLatitude, double areaLongitude) {
         AreaDetailsOverlay(
           area: _currentlyDetailedArea,
           onChatNavigation: (area) {
-            snackbar(context, area.name); // Use extracted function
-                if (mounted) {
-                  setState(() {
-                    _currentlyChattedArea = area;
-                  });
-                }          
+            if (mounted) {
+              setState(() {
+                _currentlyChattedArea = area;
+              });
+            }
+                  _adjustMapCenter(area.centerLatitude, area.centerLongitude, area.radiusMeter); 
           },
           // onClose: () {  if (mounted) setState(() => _currentlyDetailedArea = null);  },
         ),
