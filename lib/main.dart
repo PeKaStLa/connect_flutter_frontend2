@@ -79,7 +79,7 @@ void _adjustMapCenter(double areaLatitude, double areaLongitude) {
   final LatLng currentCenter = mapController.camera.center;
   final double currentZoom = mapController.camera.zoom;
   // Calculate the offset in latitude degrees
-  double offset = (0.245) * (1 / pow(2, currentZoom - 10));
+  double offset = (0.23) * (1 / pow(2, currentZoom - 10));
   // Calculate the new center point
   LatLng newCenter = LatLng(areaLatitude - offset, areaLongitude);
   mapController.move(newCenter, currentZoom);
@@ -192,21 +192,21 @@ void _adjustMapCenter(double areaLatitude, double areaLongitude) {
                 }
               });
             }
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.blue.withAlpha(isColored ? 210 : 100),
-              border: Border.all(color: Colors.blue.shade700, width: isColored ? 3 : 2),
+          }, // Close onTap
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue.withAlpha(isColored ? 210 : 100),
+                border: Border.all(color: Colors.blue.shade700, width: isColored ? 3 : 2),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                area.name,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+              ),
             ),
-            alignment: Alignment.center,
-            child: Text(
-              area.name,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-            ),
-          ),
         ),
       ),
     );

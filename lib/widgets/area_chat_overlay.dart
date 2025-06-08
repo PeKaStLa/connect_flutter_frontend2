@@ -152,7 +152,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
       left: 5,
       right: 5,
       child: Container(
-        height: 545,
+        height: 500,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(8.0),
