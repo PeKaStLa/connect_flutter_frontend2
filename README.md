@@ -56,6 +56,7 @@ samples, guidance on mobile development, and a full API reference.
 - device location gps or choose point on map / city from list...
 - ....
 - how to find out if user is in area?????????
+- Initial zoom to the current area and update the backend user info!
 - ...
 - wie machen mit Anmeldung? 
 - Chatten nur mit real GPS location? oder auch mit frei gewählter Location?
@@ -63,6 +64,12 @@ samples, guidance on mobile development, and a full API reference.
 - Chatten wenn in keine Area?
 - Chatten nur in der aktuellen Area oder auch drum herum?
 - wann möglich andere Areas zu subscriben???
+- Wie weiter Location-Distance-Filter?
 - ...
+- Evtl: wenn unangemeldet kann der User alle Areas sehen und seine Location und die Chats öffnen, aber er darf nicht selbst Messages senden. 
+- Senden Button gibt dann die Nachricht DU bist nicht angemeldet. 
+- Und die Buttons für Goofle/Apple/Facebook/E-MailPassword erscheinen.
+- => TOP, gute Idee.
+- ....
 
 
