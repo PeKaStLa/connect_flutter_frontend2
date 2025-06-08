@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:hive_ce/hive.dart';
+//import 'package:hive_ce/hive.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 
 class ChatBoxCache {
   static final ChatBoxCache _instance = ChatBoxCache._internal();

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'dart:math';
 import 'dart:core'; // For math.cos, math.pow
 import 'package:connect_flutter/plugins/zoombuttons.dart';
@@ -9,9 +11,11 @@ import 'package:connect_flutter/widgets/area_details_overlay.dart'; // Import th
 import 'package:connect_flutter/models/area_data.dart'; // Import the new area data file
 import 'package:connect_flutter/utils/map_utils.dart'; // Import the new utility functions
 import 'package:connect_flutter/widgets/area_chat_overlay.dart'; // Import the chat overlay
-import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service; // Import your service
 import 'package:logger/logger.dart'; // Import the logger package
+import 'package:hive_ce_flutter/hive_flutter.dart';
+//import 'package:hive_ce/hive.dart';
+
 
 void main() async {
   await Hive.initFlutter(); // Initialize Hive for Flutter
@@ -60,15 +64,68 @@ class _MyHomePageState extends State<MyHomePage> {
   String? _loadingError; // To store any error message during loading
   final Logger _logger = Logger(); // Initialize a logger for this state
 
+
   @override
   void initState() {
     super.initState();
     mapController = MapController();
-    
-    // _currentZoom is initialized. It will be updated by onPositionChanged.
     _fetchMapAreas();
+    _centerMapOnUserLocation(); // New call
+
   }
 
+
+  /// Determine the current position of the device.
+  /// When the location services are not enabled or permissions
+  /// are denied the `Future` will return an error.
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error('Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
+  }
+
+  
+Future<void> _centerMapOnUserLocation() async {
+  try {
+    final position = await _determinePosition();
+    mapController.move(LatLng(position.latitude, position.longitude), _currentZoom);
+     _logger.i("Centered map on user's current location: ${position.latitude}, ${position.longitude}");
+  } catch (e) {
+    _logger.e("Error getting current location: $e");
+    // Handle error, e.g., show a message to the user or default to a preset location.
+    // The map already has an initialCenter, so it will fall back to that.
+  }
+}
 
 void _adjustMapCenter(double areaLatitude, double areaLongitude, double areaRadius) {
   if (!mounted) {
@@ -282,6 +339,7 @@ void _adjustMapCenter(double areaLatitude, double areaLongitude, double areaRadi
             padding: 10,
             alignment: Alignment.bottomRight,
           ),
+          CurrentLocationLayer(),
         ],
       ),
         // Use the new AreaDetailsOverlay widget
@@ -293,7 +351,7 @@ void _adjustMapCenter(double areaLatitude, double areaLongitude, double areaRadi
                 _currentlyChattedArea = area;
               });
             }
-                  _adjustMapCenter(area.centerLatitude, area.centerLongitude, area.radiusMeter); 
+            _adjustMapCenter(area.centerLatitude, area.centerLongitude, area.radiusMeter); 
           },
           // onClose: () {  if (mounted) setState(() => _currentlyDetailedArea = null);  },
         ),
