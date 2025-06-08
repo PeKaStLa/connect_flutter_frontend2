@@ -51,17 +51,7 @@ samples, guidance on mobile development, and a full API reference.
 - ....
 - ....
 - ....
-- next change zoom when tapped area is too big or too small the make sure it gets shown in optimal size. Maybe use this formular: y ≈ 6170 * x^6.77 / 100
-
-    x = 12.75: y ≈ 6170 * (12.75)^6.77 / 100 ≈ 2303.49 (actual value: 2300)
-    x = 11: y ≈ 6170 * (11)^6.77 / 100 ≈ 7613.89 (actual value: 7600)
-    x = 14: y ≈ 6170 * (14)^6.77 / 100 ≈ 810.13 (actual value: 800)
-    x = 13.2: y ≈ 6170 * (13.2)^6.77 / 100 ≈ 1603.45 (actual value: 1600)
-    x = 11.9: y ≈ 6170 * (11.9)^6.77 / 100 ≈ 4004.19 (actual value: 4000)
-
-
-
-- ALSO: find out best zoom? When only area is visible or also areas around this area?????
+- next change zoom when tapped area is too big or too small the make sure it gets shown in optimal size. ALSO: find out best zoom? When only area is visible or also areas around this area? Devonport Area is a bit close to the upper Detail-Field. Maybe need a better formular for the future???
 - ...
 
 
