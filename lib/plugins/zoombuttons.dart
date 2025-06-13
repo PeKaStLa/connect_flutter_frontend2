@@ -18,6 +18,7 @@ class ZoomButtons extends StatelessWidget {
   final IconData exploreIcon;
   final IconData navigationIcon;
   final double spaceBetweenButtons;
+  final VoidCallback? onCompassNorthPressed;
 
   const ZoomButtons({
     super.key,
@@ -35,6 +36,7 @@ class ZoomButtons extends StatelessWidget {
     this.exploreIcon = Icons.explore,
     this.navigationIcon = Icons.navigation,
     this.spaceBetweenButtons = 0, // Default small spacing between buttons
+    this.onCompassNorthPressed,
   });
 
   @override
@@ -51,18 +53,25 @@ class ZoomButtons extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             FloatingActionButton(
-              heroTag: 'setRotationToZeroButton',
-              mini: mini,
-              backgroundColor: zoomInColor ?? theme.colorScheme.primary,
-              onPressed: () {
-                controller.rotate(0);
-              },
-              child: (camera.rotation.abs() < 0.001) // More robust check for 0 rotation
-                  ? Icon(navigationIcon, color: zoomInColorIcon ?? theme.iconTheme.color)
-                  : const CustomMapCompass( // Added const
-                      hideIfRotatedNorth: true,
-                    ),
-            ),
+  heroTag: 'setRotationToZeroButton',
+  mini: mini,
+  backgroundColor: zoomInColor ?? theme.colorScheme.primary,
+  onPressed: () {
+    if (camera.rotation.abs() < 0.001) {
+      // If already north, trigger the callback to move to current location
+      if (onCompassNorthPressed != null) {
+        onCompassNorthPressed!();
+      }
+    } else {
+      controller.rotate(0);
+    }
+  },
+  child: (camera.rotation.abs() < 0.001)
+      ? Icon(navigationIcon, color: zoomInColorIcon ?? theme.iconTheme.color)
+      : const CustomMapCompass(
+          hideIfRotatedNorth: true,
+        ),
+),
             SizedBox(height: spaceBetweenButtons), // Use SizedBox for spacing
             FloatingActionButton(
               heroTag: 'zoomInButton',

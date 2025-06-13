@@ -256,13 +256,14 @@ class _MapViewState extends State<MapView> {
             MarkerLayer(
               markers: _mapAreas.map(_buildAreaMarker).toList(),
             ),
-            const ZoomButtons(
+            ZoomButtons(
               minZoom: 4,
               maxZoom: 19,
               mini: true,
               padding: 10,
               alignment: Alignment.bottomRight,
-            ),
+              onCompassNorthPressed: _centerMapOnUserLocation,
+),
           CurrentLocationLayer(),          
           ],
         ),
