@@ -281,7 +281,7 @@ void _adjustMapCenter(double areaLatitude, double areaLongitude, double areaRadi
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text('${widget.title} - Zoom: ${_currentZoom.toStringAsFixed(2)}'),
+        title: Text('${widget.title} - Test - Zoom: ${_currentZoom.toStringAsFixed(2)}'),
       ),
       body: _isLoadingAreas
           ? const Center(child: CircularProgressIndicator())
