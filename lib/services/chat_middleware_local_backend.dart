@@ -1,8 +1,7 @@
 import 'package:pocketbase/pocketbase.dart'; // For PocketBase type
 import 'package:logger/logger.dart';
 import 'package:flutter_chat_core/flutter_chat_core.dart';
-
-import 'package:connect_flutter/controllers/hive_chat_controller.dart';
+import 'package:connect_flutter/utils/hive_chat_controller.dart';
 import 'package:connect_flutter/utils/chat_utils.dart' as chat_utils;
 import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service; // To call the actual sendMessage
 

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_chat_core/flutter_chat_core.dart';
-import 'package:hive_ce/hive.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:connect_flutter/services/chat_box_cache_class.dart'; // Import your service
 
 class HiveChatController

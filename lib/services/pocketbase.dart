@@ -1,6 +1,6 @@
 import 'package:pocketbase/pocketbase.dart';
 import 'package:logger/logger.dart'; // Import the logger package
-import 'package:connect_flutter/constants/pocketbase_constants.dart'; // Import constants
+import 'package:connect_flutter/utils/pocketbase_constants.dart'; // Import constants
 
 final pb = PocketBase('https://connect.pockethost.io');
 final Logger _logger = Logger(); // Initialize the logger

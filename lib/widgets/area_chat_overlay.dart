@@ -3,10 +3,10 @@ import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:connect_flutter/models/area_data.dart'; // Import the Area model
 import 'package:pocketbase/pocketbase.dart'; // Import PocketBase
-import 'package:connect_flutter/controllers/hive_chat_controller.dart'; // Import HiveChatController
+import 'package:connect_flutter/utils/hive_chat_controller.dart'; // Import HiveChatController
 import 'package:connect_flutter/services/pocketbase.dart' as pocketbase_service; // Still needed for getInitialMessages
 import 'package:connect_flutter/services/chat_middleware_local_backend.dart' as chat_middleware; // Import the new middleware
-import 'package:connect_flutter/constants/pocketbase_constants.dart'; // Import constants
+import 'package:connect_flutter/utils/pocketbase_constants.dart'; // Import constants
 import 'package:logger/logger.dart'; // Import the logger package
 import 'package:connect_flutter/services/chat_box_cache_class.dart'; // Import your service
 
