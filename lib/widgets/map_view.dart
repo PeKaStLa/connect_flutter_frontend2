@@ -11,7 +11,7 @@ import 'package:logger/logger.dart';
 import 'package:connect_flutter/widgets/area_details_overlay.dart';
 import 'package:connect_flutter/widgets/area_chat_overlay.dart';
 import 'package:connect_flutter/plugins/zoombuttons.dart';
-import 'package:connect_flutter/misc/tile_providers.dart';
+import 'package:connect_flutter/utils/tile_providers.dart';
 
 class MapView extends StatefulWidget {
   final double currentZoom;
