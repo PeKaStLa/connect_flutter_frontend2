@@ -57,7 +57,7 @@ class AccountPage extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.person),
           title: const Text('AuthStore.record.username'),
-          subtitle: Text(pb.authStore.record?.data['username']?.toString() ?? 'null'),
+          subtitle: Text(pb.authStore.record?.data['user_name']?.toString() ?? 'null'),
         ),
       ],
     );

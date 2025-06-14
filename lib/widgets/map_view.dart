@@ -88,7 +88,7 @@ class _MapViewState extends State<MapView> {
       return;
     }
     final double newZoom = (-1.425 * log(areaRadius) + 24.135);
-    double offset = (0.23) * (1 / pow(2, newZoom - 10));
+    double offset = (0.205) * (1 / pow(2, newZoom - 10));
     LatLng newCenter = LatLng(areaLatitude - offset, areaLongitude);
     mapController.move(newCenter, newZoom);
   }
