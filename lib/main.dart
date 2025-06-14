@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:connect_flutter/widgets/map_view.dart';
+import 'package:connect_flutter/widgets/settings_overlay.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Map Demo'),
+      home: const MyHomePage(title: 'Connect '),
     );
   }
 }
@@ -36,6 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
   double _currentZoom = 12.0;
   final Logger _logger = Logger();
 
+  bool isLoggedIn = false; // Set to true if user is logged in
+
   void _updateCurrentZoom(double? newZoom) {
     if (newZoom == null) return;
     if (_currentZoom != newZoom) {
@@ -47,10 +50,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    String userStatus = isLoggedIn ? "Logged in" : "Guest";
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('${widget.title} - Zoom: ${_currentZoom.toStringAsFixed(2)}'),
+        title: Text(
+          '${widget.title} - $userStatus - ${_currentZoom.toStringAsFixed(2)}',
+        ),
+        
+  actions: [
+    IconButton(
+      icon: const Icon(Icons.settings),
+      tooltip: 'Settings',
+      onPressed: () {
+        showDialog(
+  context: context,
+  barrierColor: Colors.black54,
+  builder: (context) {
+    return const SettingsOverlay();
+  },
+);
+      },
+    ),
+  ],
       ),
       body: MapView(
         currentZoom: _currentZoom,

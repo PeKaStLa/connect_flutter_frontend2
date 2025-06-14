@@ -71,5 +71,20 @@ samples, guidance on mobile development, and a full API reference.
 - Und die Buttons für Goofle/Apple/Facebook/E-MailPassword erscheinen.
 - => TOP, gute Idee.
 - ....
+- ...
+- ...
+- ...
+- ...
+- Errors when opening settings overlay:
+
+Reloaded 2 of 1484 libraries in 626ms (compile: 
+34 ms, reload: 283 ms, reassemble: 158 ms).     
+W/WindowOnBackDispatcher(32525): OnBackInvokedCallback is not enabled for the application.      
+W/WindowOnBackDispatcher(32525): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+E/BLASTBufferQueue(32525): [SurfaceView[com.example.connect_flutter/com.example.connect_flutter.MainActivity]#1](f:1,a:4) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 4 max:2 + 2
+E/BLASTBufferQueue(32525): [SurfaceView[com.example.connect_flutter/com.example.connect_flutter.MainActivity]#1](f:1,a:4) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 4 max:2 + 2
+E/BLASTBufferQueue(32525): [SurfaceView[com.example.connect_flutter/com.example.connect_flutter.MainActivity]#1](f:1,a:4) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 4 max:2 + 2
+E/BLASTBufferQueue(32525): [SurfaceView[com.example.connect_flutter/com.example.connect_flutter.MainActivity]#1](f:1,a:4) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 4 max:2 + 2
+E/BLASTBufferQueue(32525): [SurfaceView[com.example.connect_flutter/com.example.connect_flutter.MainActivity]#1](f:1,a:4) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 4 max:2 + 2
 
 
