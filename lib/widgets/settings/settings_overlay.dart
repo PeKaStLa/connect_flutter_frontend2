@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:connect_flutter/widgets/settings/login_form.dart';
 import 'package:connect_flutter/widgets/settings/register_form.dart';
 import 'package:connect_flutter/widgets/settings/logout_confirm_page.dart';
+import 'package:connect_flutter/widgets/settings/account_page.dart';
 
 class SettingsOverlay extends StatefulWidget {
   final bool isLoggedIn;
@@ -97,11 +98,6 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
     });
   }
 
-  void _logout() {
-    _setLoginStatus(false);
-    Navigator.of(context).pop(); // Close the overlay after logout
-  }
-
   @override
   Widget build(BuildContext context) {
     final String statusText = isLoggedIn ? 'Logged in' : 'Guest';
@@ -109,7 +105,7 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
     final Color statusColor = isLoggedIn ? Colors.green : Colors.grey;
 
     return Align(
-      alignment: const Alignment(0, -0.9),
+      alignment: const Alignment(0, -0.01),
       child: FractionallySizedBox(
         widthFactor: 0.85,
         heightFactor: 0.85,
@@ -185,27 +181,11 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
                                   },
                                 )
                               : showAccountPage
-                                  ? ListView(
-                                      key: const ValueKey('accountPage'),
-                                      children: [
-                                        ListTile(
-                                          leading: const Icon(Icons.app_registration),
-                                          title: const Text('Register'),
-                                          onTap: _openRegisterPage,
-                                        ),
-                                        ListTile(
-                                          leading: const Icon(Icons.login),
-                                          title: const Text('Login'),
-                                          enabled: !isLoggedIn,
-                                          onTap: !isLoggedIn ? _openLoginPage : null,
-                                        ),
-                                        ListTile(
-                                          leading: const Icon(Icons.logout),
-                                          title: const Text('Logout'),
-                                          enabled: isLoggedIn,
-                                          onTap: isLoggedIn ? _openLogoutConfirmPage : null,
-                                        ),
-                                      ],
+                                  ? AccountPage(
+                                      isLoggedIn: isLoggedIn,
+                                      onRegister: _openRegisterPage,
+                                      onLogin: _openLoginPage,
+                                      onLogout: _openLogoutConfirmPage,
                                     )
                                   : ListView(
                                       key: const ValueKey('settingsList'),
