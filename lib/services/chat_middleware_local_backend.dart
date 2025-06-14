@@ -20,7 +20,7 @@ Future<void> processAndSendChatMessage({
   required String messageText,
   required PocketBase currentUserPb,
 }) async {
-  final authorId = currentUserPb.authStore.model?.id ?? 'guest_user';
+  final authorId = currentUserPb.authStore.record?.id ?? 'guest_user';
   final String newMessageId = chat_utils.generateMessageId(15);
 
   final textMessage = TextMessage(

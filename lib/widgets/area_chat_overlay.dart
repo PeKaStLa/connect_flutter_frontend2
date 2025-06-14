@@ -9,6 +9,7 @@ import 'package:connect_flutter/services/chat_middleware_local_backend.dart' as 
 import 'package:connect_flutter/utils/pocketbase_constants.dart'; // Import constants
 import 'package:logger/logger.dart'; // Import the logger package
 import 'package:connect_flutter/services/chat_box_cache_class.dart'; // Import your service
+import 'package:connect_flutter/utils/map_utils.dart'; // Import the snackbar utility
 
 
 class AreaChatOverlay extends StatefulWidget {
@@ -98,7 +99,7 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
         
         // PocketBase 'created' field is a UTC string. Parse it.
         // Fallback to current UTC time if parsing fails or 'created' is missing.
-        final DateTime createdAt = DateTime.tryParse(record.created)?.toLocal() ?? DateTime.now().toUtc();
+        final DateTime createdAt = DateTime.tryParse(record.data['created'])?.toLocal() ?? DateTime.now().toUtc();
 
         return TextMessage(
           id: messageId,
@@ -206,21 +207,26 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
     if (!_isChatReady) {
       return const Center(child: CircularProgressIndicator());
     }
+    final bool isLoggedIn = widget.pb.authStore.isValid;
     return Chat(
       chatController: _chatController,
-      currentUserId: widget.pb.authStore.model?.id ?? 'guest_user', // Use PocketBase user or a default
-      onMessageSend: (String messageText) async { // Inlined _handleSendMessage logic
+      currentUserId: widget.pb.authStore.record?.id ?? 'guest_user', 
+      onMessageSend: (String messageText) async {
+        if (!isLoggedIn) {
+          snackbar(context, "Only logged in users can send messages!");
+          return;
+        }
         await chat_middleware.processAndSendChatMessage(
           chatController: _chatController,
           areaId: widget.area.id,
           messageText: messageText,
-          currentUserPb: widget.pb, // Pass the PocketBase instance from the widget
+          currentUserPb: widget.pb,
         );
       },
       resolveUser: (UserID id) async {
         // Implement actual user resolution, e.g., from PocketBase
-        if (id == widget.pb.authStore.model?.id) {
-          return User(id: id, name: widget.pb.authStore.model?.data['name'] ?? 'You');
+        if (id == widget.pb.authStore.record?.id) {
+          return User(id: id, name: widget.pb.authStore.record?.data['user_name'] ?? 'You');
         }
         return User(id: id, name: 'User $id'); // Placeholder
       },

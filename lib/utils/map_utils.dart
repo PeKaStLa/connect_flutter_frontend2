@@ -22,5 +22,5 @@ void snackbar(BuildContext context, String message) {
   _mapUtilsLogger.i('Action for: $message');
   ScaffoldMessenger.of(context).removeCurrentSnackBar(); // Remove previous snackbar
   ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(content: Text('snackbar for: $message')), );
+  SnackBar(content: Text(message)), );
 }
