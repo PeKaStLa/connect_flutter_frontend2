@@ -5,6 +5,68 @@ import 'package:connect_flutter/utils/pocketbase_constants.dart'; // Import cons
 final pb = PocketBase('https://connect.pockethost.io');
 final Logger _logger = Logger(); // Initialize the logger
 
+
+
+
+Future<RecordModel> createUser({
+  required String email,
+  required String userName,
+  required String password,
+  required String passwordConfirm,
+  bool? emailVisibility,
+  String? subscribedAreasIds,
+  String? currentLongitude,
+  String? currentLatitude,
+  String? lastLatitude,
+  String? lastLongitude,
+  String? currentArea,
+  String? lastArea,
+}) async {
+  final body = <String, dynamic>{
+    "email": email,
+    "user_name": userName,
+    "password": password,
+    "passwordConfirm": passwordConfirm,
+    if (emailVisibility != null) "emailVisibility": emailVisibility,
+    if (subscribedAreasIds != null) "subscribed_areas_ids": subscribedAreasIds,
+    if (currentLongitude != null) "current_longitude": currentLongitude,
+    if (currentLatitude != null) "current_latitude": currentLatitude,
+    if (lastLatitude != null) "last_latitude": lastLatitude,
+    if (lastLongitude != null) "last_longitude": lastLongitude,
+    if (currentArea != null) "current_area": currentArea,
+    if (lastArea != null) "last_area": lastArea,
+  };
+
+  final record = await pb.collection('users').create(body: body);
+  return record;
+}
+
+
+
+Future<dynamic> loginUser({
+  required String email,
+  required String password,
+}) async {
+  final authData = await pb.collection('users').authWithPassword(
+    email,
+    password,
+  );
+
+  // You can access the auth data from the authStore
+  print(pb.authStore.isValid);
+  print(pb.authStore.token);
+  print(pb.authStore.model.id);
+
+  return authData;
+}
+
+void logoutUser() {
+  pb.authStore.clear();
+}
+
+
+
+
 /// Fetches all records from the 'areas' collection from PocketBase.
 ///
 /// The records are sorted by 'someField' in descending order by default.
@@ -80,3 +142,4 @@ Future<RecordModel> sendMessage({
     rethrow;
   }
 }
+
