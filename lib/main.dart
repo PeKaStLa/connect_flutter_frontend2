@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:connect_flutter/widgets/map_view.dart';
-import 'package:connect_flutter/widgets/settings_overlay.dart';
+import 'package:connect_flutter/widgets/settings/settings_overlay.dart';
 
 void main() async {
   await Hive.initFlutter();
