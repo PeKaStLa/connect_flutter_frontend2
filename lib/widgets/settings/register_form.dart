@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:connect_flutter/services/pocketbase.dart';
+import 'package:connect_flutter/utils/map_utils.dart';
 
 class RegisterForm extends StatefulWidget {
-  const RegisterForm({super.key});
+  final VoidCallback? onRegisterSuccess;
+  const RegisterForm({super.key, this.onRegisterSuccess});
 
   @override
   State<RegisterForm> createState() => _RegisterFormState();
@@ -64,10 +66,16 @@ class _RegisterFormState extends State<RegisterForm> {
         password: _passwordController.text,
         passwordConfirm: _passwordConfirmController.text,
       );
+      if (!mounted) return;
       setState(() {
         _success = "Registration successful! You can now log in.";
       });
+      snackbar(context, "Registration successful! You can now log in.");
+      if (widget.onRegisterSuccess != null) {
+        widget.onRegisterSuccess!();
+      }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString();
       });

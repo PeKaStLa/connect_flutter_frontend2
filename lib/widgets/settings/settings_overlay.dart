@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:connect_flutter/widgets/settings/account_page.dart';
 import 'package:connect_flutter/widgets/settings/login_form.dart';
 import 'package:connect_flutter/widgets/settings/register_form.dart';
 import 'package:connect_flutter/widgets/settings/logout_confirm_page.dart';
-import 'package:connect_flutter/widgets/settings/account_page.dart';
 
 class SettingsOverlay extends StatefulWidget {
   final bool isLoggedIn;
@@ -24,6 +24,8 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
   bool showLogoutConfirmPage = false;
 
   late bool isLoggedIn;
+
+  String? _confirmationMessage; // Add this field
 
   @override
   void initState() {
@@ -61,12 +63,14 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
       showLoginPage = true;
       showRegisterPage = false;
       showLogoutConfirmPage = false;
+      showAccountPage = false;
     });
   }
 
   void _closeLoginPage() {
     setState(() {
       showLoginPage = false;
+      showAccountPage = true; // Go back to account page
     });
   }
 
@@ -75,12 +79,14 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
       showRegisterPage = true;
       showLoginPage = false;
       showLogoutConfirmPage = false;
+      showAccountPage = false;
     });
   }
 
   void _closeRegisterPage() {
     setState(() {
       showRegisterPage = false;
+      showAccountPage = true; // Go back to account page
     });
   }
 
@@ -89,23 +95,54 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
       showLogoutConfirmPage = true;
       showLoginPage = false;
       showRegisterPage = false;
+      showAccountPage = false;
     });
   }
 
   void _closeLogoutConfirmPage() {
     setState(() {
       showLogoutConfirmPage = false;
+      showAccountPage = true; // Go back to account page
     });
+  }
+
+  void _showConfirmation(String message) {
+    setState(() {
+      _confirmationMessage = message;
+    });
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _confirmationMessage = null;
+        });
+      }
+    });
+  }
+
+  void _onLogout() {
+    _setLoginStatus(false);
+    _closeLogoutConfirmPage();
+    _showConfirmation("Logout successful!");
+  }
+
+  void _onRegisterSuccess() {
+    _closeRegisterPage();
+    _showConfirmation("Registration successful!");
+  }
+
+  void _onLogin(bool loggedIn) {
+    if (loggedIn) {
+      _setLoginStatus(true);
+      _showConfirmation("Login successful!");
+    }
+    _closeLoginPage();
   }
 
   @override
   Widget build(BuildContext context) {
-    final String statusText = isLoggedIn ? 'Logged in' : 'Guest';
-    final IconData statusIcon = isLoggedIn ? Icons.verified_user : Icons.person_outline;
-    final Color statusColor = isLoggedIn ? Colors.green : Colors.grey;
-
+    
     return Align(
-      alignment: const Alignment(0, -0.01),
+      alignment: const Alignment(0, -0.9),
       child: FractionallySizedBox(
         widthFactor: 0.85,
         heightFactor: 0.85,
@@ -165,20 +202,15 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
                   duration: const Duration(milliseconds: 300),
                   child: showLogoutConfirmPage
                       ? LogoutConfirmPage(
-                          onConfirm: () {
-                            _setLoginStatus(false);
-                            Navigator.of(context).pop();
-                          },
+                          onConfirm: _onLogout,
                         )
                       : showRegisterPage
-                          ? const RegisterForm()
+                          ? RegisterForm(
+                              onRegisterSuccess: _onRegisterSuccess,
+                            )
                           : showLoginPage
                               ? LoginForm(
-                                  onLogin: (loggedIn) {
-                                    if (loggedIn) {
-                                      _setLoginStatus(true);
-                                    }
-                                  },
+                                  onLogin: _onLogin,
                                 )
                               : showAccountPage
                                   ? AccountPage(
@@ -186,20 +218,11 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
                                       onRegister: _openRegisterPage,
                                       onLogin: _openLoginPage,
                                       onLogout: _openLogoutConfirmPage,
+                                      confirmationMessage: _confirmationMessage,
                                     )
                                   : ListView(
                                       key: const ValueKey('settingsList'),
                                       children: [
-                                        ListTile(
-                                          leading: Icon(statusIcon, color: statusColor),
-                                          title: Text(
-                                            'Login Status: $statusText',
-                                            style: TextStyle(
-                                              color: statusColor,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
                                         ListTile(
                                           leading: const Icon(Icons.person),
                                           title: const Text('Account'),

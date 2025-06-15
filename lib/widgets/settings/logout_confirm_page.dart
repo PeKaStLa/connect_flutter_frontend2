@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:connect_flutter/services/pocketbase.dart';
+import 'package:connect_flutter/utils/map_utils.dart';
 
 class LogoutConfirmPage extends StatelessWidget {
   final VoidCallback onConfirm;
@@ -23,8 +24,13 @@ class LogoutConfirmPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 logoutUser();
+                // Guarded snackbar after async gap
+                await Future.delayed(const Duration(milliseconds: 100));
+                if (context.mounted) {
+                  snackbar(context, "Logout successful!");
+                }
                 onConfirm();
               },
               style: ElevatedButton.styleFrom(

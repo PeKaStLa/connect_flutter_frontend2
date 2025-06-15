@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:connect_flutter/services/pocketbase.dart';
+import 'package:connect_flutter/utils/map_utils.dart';
 
 class LoginForm extends StatefulWidget {
   final void Function(bool) onLogin;
@@ -35,15 +36,18 @@ class _LoginFormState extends State<LoginForm> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
+      if (!mounted) return;
       setState(() {
         _success = "Login successful!";
       });
-      widget.onLogin(true); // Notify parent of login
+      snackbar(context, "Login successful!");
+      widget.onLogin(true);
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _error = e.toString();
       });
-      widget.onLogin(false); // Notify parent of failed login
+      widget.onLogin(false);
     } finally {
       if (mounted) {
         setState(() {

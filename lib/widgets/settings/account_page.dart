@@ -6,6 +6,7 @@ class AccountPage extends StatelessWidget {
   final VoidCallback onRegister;
   final VoidCallback onLogin;
   final VoidCallback onLogout;
+  final String? confirmationMessage;
 
   const AccountPage({
     super.key,
@@ -13,6 +14,7 @@ class AccountPage extends StatelessWidget {
     required this.onRegister,
     required this.onLogin,
     required this.onLogout,
+    this.confirmationMessage,
   });
 
   @override
@@ -20,6 +22,29 @@ class AccountPage extends StatelessWidget {
     return ListView(
       key: const ValueKey('accountPage'),
       children: [
+        ListTile(
+          leading: Icon(
+            isLoggedIn ? Icons.verified_user : Icons.person_outline,
+            color: isLoggedIn ? Colors.green : Colors.grey,
+          ),
+          tileColor: confirmationMessage != null ? Colors.green[200] : null, // Slightly darker green
+          title: confirmationMessage == null
+              ? Text(
+                  'Login Status: ${isLoggedIn ? 'Logged in' : 'Guest'}',
+                  style: TextStyle(
+                    color: isLoggedIn ? Colors.green : Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              : Text(
+                  confirmationMessage!,
+                  style: const TextStyle(
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+        ),
         ListTile(
           leading: const Icon(Icons.app_registration),
           title: const Text('Register'),
@@ -57,7 +82,7 @@ class AccountPage extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.person),
           title: const Text('AuthStore.record.username'),
-          subtitle: Text(pb.authStore.record?.data['user_name']?.toString() ?? 'null'),
+          subtitle: Text(pb.authStore.record?.data['username']?.toString() ?? 'null'),
         ),
       ],
     );
