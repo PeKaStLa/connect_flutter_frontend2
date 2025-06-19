@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:connect_flutter/services/pocketbase.dart';
-import 'package:connect_flutter/utils/map_utils.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginForm extends StatefulWidget {
   final void Function(bool) onLogin;
@@ -40,14 +40,22 @@ class _LoginFormState extends State<LoginForm> {
       setState(() {
         _success = "Login successful!";
       });
-      snackbar(context, "Login successful!");
-      widget.onLogin(true);
+Fluttertoast.showToast(
+  msg: "Login successful!",
+  toastLength: Toast.LENGTH_LONG,
+  gravity: ToastGravity.TOP,
+  backgroundColor: Colors.green,
+  textColor: Colors.white,
+  fontSize: 16.0,
+  timeInSecForIosWeb: 4, // Duration in seconds for iOS and web (and often Android)
+);
+      widget.onLogin(true); // Only triggers page switch on success
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _error = e.toString();
       });
-      widget.onLogin(false);
+      widget.onLogin(false); // Does NOT trigger page switch
     } finally {
       if (mounted) {
         setState(() {

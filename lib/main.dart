@@ -1,12 +1,22 @@
-import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:connect_flutter/widgets/map_view.dart';
 import 'package:connect_flutter/widgets/settings/settings_overlay.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/material.dart';
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 
 void main() async {
   await Hive.initFlutter();
-  runApp(const MyApp());
+  runApp(
+        MaterialApp(
+          builder: FToastBuilder(),
+          home: const MyApp(),
+          navigatorKey: navigatorKey,
+        ),
+      );
 }
 
 class MyApp extends StatelessWidget {

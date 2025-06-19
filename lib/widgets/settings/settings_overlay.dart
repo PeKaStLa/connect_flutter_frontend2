@@ -119,23 +119,26 @@ class _SettingsOverlayState extends State<SettingsOverlay> {
     });
   }
 
-  void _onLogout() {
-    _setLoginStatus(false);
-    _closeLogoutConfirmPage();
-    _showConfirmation("Logout successful!");
+  void _onLogin(bool loggedIn) {
+    if (loggedIn) {
+      _setLoginStatus(true);
+      _showConfirmation("Login successful!");
+      _closeLoginPage(); // Only on success
+    }
+    // Do nothing on failure
   }
 
   void _onRegisterSuccess() {
     _closeRegisterPage();
     _showConfirmation("Registration successful!");
+    // Only on success
   }
 
-  void _onLogin(bool loggedIn) {
-    if (loggedIn) {
-      _setLoginStatus(true);
-      _showConfirmation("Login successful!");
-    }
-    _closeLoginPage();
+  void _onLogout() {
+    _setLoginStatus(false);
+    _closeLogoutConfirmPage();
+    _showConfirmation("Logout successful!");
+    // Only on success
   }
 
   @override

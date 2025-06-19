@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:connect_flutter/services/pocketbase.dart';
-import 'package:connect_flutter/utils/map_utils.dart';
 
 class LogoutConfirmPage extends StatelessWidget {
   final VoidCallback onConfirm;
@@ -24,14 +24,32 @@ class LogoutConfirmPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () async {
+              onPressed: () {
                 logoutUser();
-                // Guarded snackbar after async gap
-                await Future.delayed(const Duration(milliseconds: 100));
-                if (context.mounted) {
-                  snackbar(context, "Logout successful!");
+                // Check if logout was successful
+                if (!pb.authStore.isValid) {
+                  Fluttertoast.showToast(
+                    msg: "Logout successful!",
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity: ToastGravity.TOP,
+                    backgroundColor: Colors.green,
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                    timeInSecForIosWeb: 4,
+                  );
+                  onConfirm();
+                } else {
+                  Fluttertoast.showToast(
+                    msg: "Logout failed!",
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity: ToastGravity.TOP,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                    timeInSecForIosWeb: 5,
+                  );
+                  debugPrint("│ 💡 Action for: Logout failed! AuthStore still valid.");
                 }
-                onConfirm();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,

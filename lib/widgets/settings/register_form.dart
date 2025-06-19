@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:connect_flutter/services/pocketbase.dart';
 import 'package:connect_flutter/utils/map_utils.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterForm extends StatefulWidget {
   final VoidCallback? onRegisterSuccess;
@@ -70,15 +71,24 @@ class _RegisterFormState extends State<RegisterForm> {
       setState(() {
         _success = "Registration successful! You can now log in.";
       });
-      snackbar(context, "Registration successful! You can now log in.");
+      Fluttertoast.showToast(
+        msg: "Registration successful!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+        timeInSecForIosWeb: 4,
+      );
       if (widget.onRegisterSuccess != null) {
-        widget.onRegisterSuccess!();
+        widget.onRegisterSuccess!(); // Only triggers page switch on success
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _error = e.toString();
       });
+      // Do NOT call onRegisterSuccess on failure
     } finally {
       if (mounted) {
         setState(() {
