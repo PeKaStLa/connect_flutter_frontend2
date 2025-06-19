@@ -89,11 +89,24 @@ E/BLASTBufferQueue(32525): [SurfaceView[com.example.connect_flutter/com.example.
 E/BLASTBufferQueue(32525): [SurfaceView[com.example.connect_flutter/com.example.connect_flutter.MainActivity]#1](f:1,a:4) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 4 max:2 + 2
 
 - ...
-- where to put info notice messages for the user if login fails or is successful??
-- maybe native message field?
 - ...
--  Also how to navigate the settings? When succesful then just automatically one page back?
-- What if it fails unsuccessfully? then stay?
 - ...
+- noch die genauen errors ausscjreiben statt nur error message
+
+
+possible error at registration:
+- invalid mail, 
+- mail already taken
+- password dont match, 
+- ???username already taken=>is not an error currently...???
 - ....
+
+possible error at login:
+- mail cannot be blank
+- password cannot be blank
+- => for rest: failed to authenticate
+- ....
+
+
+
 
