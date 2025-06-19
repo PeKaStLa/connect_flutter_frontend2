@@ -27,23 +27,13 @@ class AccountPage extends StatelessWidget {
             isLoggedIn ? Icons.verified_user : Icons.person_outline,
             color: isLoggedIn ? Colors.green : Colors.grey,
           ),
-          tileColor: confirmationMessage != null ? Colors.green[200] : null, // Slightly darker green
-          title: confirmationMessage == null
-              ? Text(
-                  'Login Status: ${isLoggedIn ? 'Logged in' : 'Guest'}',
-                  style: TextStyle(
-                    color: isLoggedIn ? Colors.green : Colors.grey,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              : Text(
-                  confirmationMessage!,
-                  style: const TextStyle(
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
+          title: Text(
+            'Login Status: ${isLoggedIn ? 'Logged in' : 'Guest'}',
+            style: TextStyle(
+              color: isLoggedIn ? Colors.green : Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         ListTile(
           leading: const Icon(Icons.app_registration),
@@ -82,7 +72,7 @@ class AccountPage extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.person),
           title: const Text('AuthStore.record.username'),
-          subtitle: Text(pb.authStore.record?.data['username']?.toString() ?? 'null'),
+          subtitle: Text(pb.authStore.record?.data['user_name']?.toString() ?? 'null'),
         ),
       ],
     );

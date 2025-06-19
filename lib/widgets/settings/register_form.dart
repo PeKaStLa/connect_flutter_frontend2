@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:connect_flutter/services/pocketbase.dart';
-import 'package:connect_flutter/utils/map_utils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterForm extends StatefulWidget {
