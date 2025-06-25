@@ -7,12 +7,27 @@ import 'package:connect_flutter/models/area_data.dart'; // For Area class
 // or you could pass a logger instance to functions that need it.
 final Logger _mapUtilsLogger = Logger();
 
+// Global cache for marker sizes: key is area.id, value is marker size
+final Map<String, double> _markerSizeCache = {};
+final Map<String, DateTime> _markerSizeCacheTime = {};
+
 double calculateMarkerSizeForArea(Area area, double currentZoom) {
-  // The formula might need adjustment if area.radiusMeter is very large or small
-  // to ensure calculatedSize remains within a reasonable range for display.
+  final cacheKey = area.id.toString(); // Use area.id as the key
+  final now = DateTime.now();
+
+  // Check if we have a cached value and it's not older than 10ms
+  if (_markerSizeCache.containsKey(cacheKey) &&
+      _markerSizeCacheTime.containsKey(cacheKey) &&
+      now.difference(_markerSizeCacheTime[cacheKey]!).inMilliseconds < 10) {
+    return _markerSizeCache[cacheKey]!;
+  }
+
   double calculatedSize = 0.000008 * area.radiusMeter * math.pow(2, currentZoom);
-  // Consider re-adding clamping if sizes can become too extreme:
-  // return calculatedSize.clamp(20.0, 200.0);
+
+  // Save to cache and update timestamp
+  _markerSizeCache[cacheKey] = calculatedSize;
+  _markerSizeCacheTime[cacheKey] = now;
+
   return calculatedSize;
 }
 

@@ -11,15 +11,30 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
 
   bool _isLoading = false;
   String? _error;
   String? _success;
 
   @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _emailController.addListener(_onFieldsChanged);
+    _passwordController.addListener(_onFieldsChanged);
+  }
+
+  void _onFieldsChanged() {
+    setState(() {});
+  }
+
+  @override
   void dispose() {
+    _emailController.removeListener(_onFieldsChanged);
+    _passwordController.removeListener(_onFieldsChanged);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -65,8 +80,18 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
+  bool _isEmailValid(String email) {
+    final emailRegex = RegExp(r"^[\w\.-]+@[\w\.-]+\.\w+$");
+    return emailRegex.hasMatch(email.trim());
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isButtonEnabled = 
+        _isEmailValid(_emailController.text) &&
+        _passwordController.text.trim().isNotEmpty &&
+        !_isLoading;
+
     return ListView(
       key: const ValueKey('loginForm'),
       padding: const EdgeInsets.all(24.0),
@@ -112,7 +137,7 @@ class _LoginFormState extends State<LoginForm> {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _isLoading ? null : _login,
+              onPressed: isButtonEnabled ? _login : null,
               child: _isLoading
                   ? const SizedBox(
                       width: 20,

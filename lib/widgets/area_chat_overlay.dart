@@ -1,3 +1,4 @@
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -9,7 +10,6 @@ import 'package:connect_flutter/services/chat_middleware_local_backend.dart' as 
 import 'package:connect_flutter/utils/pocketbase_constants.dart'; // Import constants
 import 'package:logger/logger.dart'; // Import the logger package
 import 'package:connect_flutter/services/chat_box_cache_class.dart'; // Import your service
-import 'package:connect_flutter/utils/map_utils.dart'; // Import the snackbar utility
 
 
 class AreaChatOverlay extends StatefulWidget {
@@ -213,7 +213,15 @@ class _AreaChatOverlayState extends State<AreaChatOverlay> {
       currentUserId: widget.pb.authStore.record?.id ?? 'guest_user', 
       onMessageSend: (String messageText) async {
         if (!isLoggedIn) {
-          snackbar(context, "Only logged in users can send messages!");
+          Fluttertoast.showToast(
+          msg: "Only logged in users can send messages!",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+          timeInSecForIosWeb: 4,
+        );
           return;
         }
         await chat_middleware.processAndSendChatMessage(
