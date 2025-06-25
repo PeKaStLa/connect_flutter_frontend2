@@ -119,7 +119,7 @@ class _LoginFormState extends State<LoginForm> {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Login'),
+                  : const Text('Log in'),
             ),
           ),
         ),
