@@ -18,7 +18,7 @@ double calculateMarkerSizeForArea(Area area, double currentZoom) {
   // Check if we have a cached value and it's not older than 10ms
   if (_markerSizeCache.containsKey(cacheKey) &&
       _markerSizeCacheTime.containsKey(cacheKey) &&
-      now.difference(_markerSizeCacheTime[cacheKey]!).inMilliseconds < 10) {
+      now.difference(_markerSizeCacheTime[cacheKey]!).inMilliseconds < 16) {
     return _markerSizeCache[cacheKey]!;
   }
 
